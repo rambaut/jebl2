@@ -1,0 +1,157 @@
+<!--              ANT build file for JAM              -->
+
+<project name="JEBL" default="dist" basedir=".">
+    <description>
+        Build file for JEBL
+    </description>
+    <!-- set global properties for this build -->
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="build-mac-only" location="build-mac-only"/>
+
+    <property name="lib" location="lib"/>
+    <property name="dist" location="dist"/>
+
+    <property environment="env"/>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+        <mkdir dir="${build-mac-only}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+
+    <target name="compile-jam" depends="init">
+        <!-- Compile the java code from ${jamsrc} into ${build} -->
+
+        <condition property="isMac">
+            <os family="mac"/>
+        </condition>
+        <javac source="1.5" srcdir="${src}" target="1.5" destdir="${build}" debug="true">
+            <include name="org/**/*"/>
+            <exclude name="org/**/maconly/*" unless = "isMac"/>
+        </javac>
+
+        <!-- Utils.class was getting included in jebl.jar    -->
+        <!-- twice and Pack200 was having issues.            -->
+        <!-- Doesn't seem to be the case for me, the class is missing! RM-->
+        <!--<delete file="${build}/org/virion/jam/mac/Utils.class"/>-->
+
+        <copy todir="${build}">
+            <fileset dir="${src}" includes="org/**/*.png"/>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <mkdir dir="${build}"/>
+        <delete includeEmptyDirs="true">
+            <fileset dir="${build}" includes="**/*"/>
+        </delete>
+
+    </target>
+
+    <target name="compile-jam-mac-only" depends="init">
+        <!-- Compile the java code from ${jamsrc} into ${build} -->
+        <condition property="isMac">
+            <os family="mac"/>
+        </condition>
+        <javac source="1.5" srcdir="${src}" target="1.5" destdir="${build-mac-only}">
+            <include name="org/**/maconly/*"/>
+        </javac>
+    </target>
+
+    <target name="dist-jam-mac-only" depends="compile-jam-mac-only" description="generate the -mac-only distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <!-- create the mac-only jar file -->
+        <jar jarfile="${lib}/jam-mac-only.jar">
+            <fileset dir="${build-mac-only}" includes="**/mac*/**/*.class,*.properties"/>
+        </jar>
+    </target>
+
+
+    <target name="dist-jam" depends="compile-jam" description="generate the JAM distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+        <delete file="${dist}/jam.jar"/>
+        <!-- Put everything in ${build} into the jam.jar file -->
+        <jar jarfile="${dist}/jam.jar">
+            <fileset dir="${build}" includes="org/**/*.class,org/**/*.properties,org/**/*.png"/>
+            <zipgroupfileset dir="${lib}" includes="jam-mac-only.jar"/>
+        </jar>
+    </target>
+
+    <target name="compile-jebl" depends="init">
+        <!-- Compile the java code from ${src} into ${build} -->
+        <javac source="1.5" srcdir="${src}" destdir="${build}" debug="true" target="1.5">
+            <include name="jebl/**/*"/>
+        </javac>
+        <copy todir="${build}">
+            <fileset dir="${src}" includes="jebl/**/*.png"/>
+        </copy>
+    </target>
+
+    <target name="dist-jebl" depends="compile-jebl" description="generate the JEBL distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <!-- Put everything in ${build} into the jebl-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/jebl.jar">
+            <fileset dir="${build}" includes="jebl/**/*.class,jebl/**/*.properties,jebl/**/*.png"/>
+            <zipgroupfileset dir="${lib}" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="dist" depends="dist-jebl,dist-jam" description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <!-- Put everything in ${build} into the jebl-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/jebl.jar">
+            <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png"/>
+            <zipgroupfileset dir="${lib}" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="dist-clean" depends="clean,compile-jebl,compile-jam" description="generate the distribution">
+        <!-- For some reason I don't fully understand, running the standard distribute
+         script doesn't always work if you have done a previous build on a previous version
+         of the source code. For some reason, it just doesn't compile some files. This
+         script seems to work better.-->
+        <mkdir dir="${dist}"/>
+
+        <!-- Put everything in ${build} into the jebl-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/jebl.jar">
+            <fileset dir="${build}" includes="**/*.class,**/*.properties,**/*.png"/>
+            <zipgroupfileset dir="${lib}" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+
+   <property name="api" location="doc/api"/>
+
+   <target name="document" depends="clean-api,prepare-api">
+      <javadoc destdir="${api}"
+               version="false"
+               use="true"
+               author="true"
+               windowtitle="Java Evolutionary Biology Library"
+               doctitle="Java Evolutionary Biology Library">
+         <fileset dir="src"/>
+         <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
+      </javadoc>
+   </target>
+
+
+   <target name="prepare-api">
+      <mkdir dir="${api}"/>
+   </target>
+
+
+   <target name="clean-api">
+      <delete dir="${api}"/>
+   </target>
+</project>
