@@ -1,7 +1,5 @@
 package jebl.util;
 
-import org.virion.jam.util.SimpleListener;
-
 import java.awt.*;
 
 /**
@@ -20,7 +18,7 @@ import java.awt.*;
  *   from introducing a way to "reset" a ProgressListener that was previously
  *   canceled from not being canceled any more.
  *
- * Any object may exhibit undefined behaviour when dealing with a ProgressListener 
+ * Any object may exhibit undefined behaviour when dealing with a ProgressListener
  * that is not fulfilling this contract.
  */
 public abstract class ProgressListener implements Cancelable { // TT: Should we let ProgressListener implement Cancelable or shouldn't we?
@@ -73,7 +71,7 @@ public abstract class ProgressListener implements Cancelable { // TT: Should we 
      */
 /*    public final boolean setComplete() {
         return setProgress(1.0);
-    }*/    
+    }*/
 
     /**
      * This method is a hook called from {@link #setProgress} to allow subclasses a
@@ -136,7 +134,7 @@ public abstract class ProgressListener implements Cancelable { // TT: Should we 
     }
 
     /**
-     * Equivalent to {@link #addFeedbackAction(String, String, org.virion.jam.util.SimpleListener) addFeedbackAction(label,"",listener)}
+     * Equivalent to {@link #addFeedbackAction(String, String, jebl.util.SimpleListener) addFeedbackAction(label,"",listener)}
      */
     public void addFeedbackAction(String label, SimpleListener listener) {
 
@@ -159,8 +157,8 @@ public abstract class ProgressListener implements Cancelable { // TT: Should we 
 
     /**
      * Removes a feedback action previously added using
-     * {@link #addFeedbackAction(String, org.virion.jam.util.SimpleListener)}.
-     * @param label The  label used as a parameter to {@link #addFeedbackAction(String, org.virion.jam.util.SimpleListener)}
+     * {@link #addFeedbackAction(String, jebl.util.SimpleListener)}.
+     * @param label The  label used as a parameter to {@link #addFeedbackAction(String, jebl.util.SimpleListener)}
      */
     public void removeFeedbackAction(String label) {
 
