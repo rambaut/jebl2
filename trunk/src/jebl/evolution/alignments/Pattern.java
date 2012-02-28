@@ -67,6 +67,13 @@ public interface Pattern {
 	 */
 	State getMostFrequentState();
 
+    /**
+     * Returns the most frequent state in this pattern, optionally including ambiguous states
+     * @param includeAmbiguous whether to include ambiguous states
+     * @return the most frequent state
+     */
+    State getMostFrequentState(boolean includeAmbiguous);
+
 	/**
 	 * Returns the frequent of the given state in this pattern
 	 * @param state
