@@ -109,7 +109,7 @@ public abstract class State implements Comparable {
         int totalStates= 0;
         int sameStates = 0;
         if (isGap() || other.isGap()) {
-            return 0;
+            return 1.0;
         }
         for (State state : getCanonicalStates()) {
             for (State state1 : other.getCanonicalStates()) {
