@@ -222,6 +222,7 @@ public class Utils {
         int i = 0;
         for (State state : sequence) {
             indices[i] = (byte)state.getIndex();
+            i++;
         }
 
         return indices;
