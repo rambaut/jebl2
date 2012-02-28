@@ -24,9 +24,19 @@ public class ConsensusSequence implements Sequence {
      * @param source
      */
     public ConsensusSequence(Taxon taxon, Alignment source) {
+        this(taxon, source, false);
+    }
+
+    /**
+     * Creates a FilteredSequence wrapper to the given source sequence.
+     *
+     * @param source
+     */
+    public ConsensusSequence(Taxon taxon, Alignment source, boolean includeAmbiguities) {
 
         this.taxon = taxon;
         this.source = source;
+        this.includeAmbiguities = includeAmbiguities;
     }
 
     /**
@@ -41,7 +51,7 @@ public class ConsensusSequence implements Sequence {
      */
     public String getString() {
         if (sequence == null) {
-            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source));
+            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source, includeAmbiguities));
         }
 
         SequenceType sequenceType = getSequenceType();
@@ -57,14 +67,14 @@ public class ConsensusSequence implements Sequence {
      */
     public State[] getStates() {
         if (sequence == null) {
-            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source));
+            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source, includeAmbiguities));
         }
         return getSequenceType().toStateArray(sequence);
     }
 
     public byte[] getStateIndices() {
         if (sequence == null) {
-            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source));
+            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source, includeAmbiguities));
         }
         return sequence;
     }
@@ -74,7 +84,7 @@ public class ConsensusSequence implements Sequence {
      */
     public State getState(int site) {
         if (sequence == null) {
-            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source));
+            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source, includeAmbiguities));
         }
         return getSequenceType().getState(sequence[site]);
     }
@@ -86,16 +96,16 @@ public class ConsensusSequence implements Sequence {
      */
     public int getLength() {
         if (sequence == null) {
-            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source));
+            sequence = jebl.evolution.sequences.Utils.getStateIndices(constructConsensus(source, includeAmbiguities));
         }
         return sequence.length;
     }
 
-    public static State[] constructConsensus(Alignment source) {
+    public static State[] constructConsensus(Alignment source, boolean includeAmbiguities) {
         State[] consensus = new State[source.getPatterns().size()];
         int i = 0;
         for (Pattern pattern : source.getPatterns()) {
-            consensus[i] = pattern.getMostFrequentState();
+            consensus[i] = pattern.getMostFrequentState(includeAmbiguities);
             i++;
         }
 
@@ -129,7 +139,6 @@ public class ConsensusSequence implements Sequence {
         return attributableHelper.getAttribute(name);
     }
 
-    @Override
     public void removeAttribute(final String name) {
         attributableHelper.removeAttribute(name);
     }
@@ -138,7 +147,6 @@ public class ConsensusSequence implements Sequence {
         return attributableHelper.getAttributeNames();
     }
 
-    @Override
     public Map<String, Object> getAttributeMap() {
         return attributableHelper.getAttributeMap();
     }
@@ -148,6 +156,7 @@ public class ConsensusSequence implements Sequence {
     private final Taxon taxon;
     private final Alignment source;
     private byte[] sequence = null;
+    private final boolean includeAmbiguities;
 
     private final AttributableHelper attributableHelper = new AttributableHelper();
 }
