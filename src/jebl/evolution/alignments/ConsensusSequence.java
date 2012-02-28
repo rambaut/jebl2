@@ -4,6 +4,8 @@ import jebl.evolution.sequences.Sequence;
 import jebl.evolution.sequences.SequenceType;
 import jebl.evolution.sequences.State;
 import jebl.evolution.taxa.Taxon;
+import jebl.util.Attributable;
+import jebl.util.AttributableHelper;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +17,7 @@ import java.util.Set;
  * @author Alexei Drummond
  * @version $Id: ConsensusSequence.java 365 2006-06-28 07:34:56Z pepster $
  */
-public abstract class ConsensusSequence implements Sequence {
+public class ConsensusSequence implements Sequence {
     /**
      * Creates a FilteredSequence wrapper to the given source sequence.
      *
@@ -120,24 +122,25 @@ public abstract class ConsensusSequence implements Sequence {
     // Attributable implementation
 
     public void setAttribute(String name, Object value) {
-        if (attributeMap == null) {
-            attributeMap = new HashMap<String, Object>();
-        }
-        attributeMap.put(name, value);
+        attributableHelper.setAttribute(name, value);
     }
 
     public Object getAttribute(String name) {
-        if (attributeMap == null) {
-            return null;
-        }
-        return attributeMap.get(name);
+        return attributableHelper.getAttribute(name);
+    }
+
+    @Override
+    public void removeAttribute(final String name) {
+        attributableHelper.removeAttribute(name);
     }
 
     public Set<String> getAttributeNames() {
-        if (attributeMap == null) {
-            return Collections.emptySet();
-        }
-        return attributeMap.keySet();
+        return attributableHelper.getAttributeNames();
+    }
+
+    @Override
+    public Map<String, Object> getAttributeMap() {
+        return attributableHelper.getAttributeMap();
     }
 
     // private members
@@ -146,6 +149,5 @@ public abstract class ConsensusSequence implements Sequence {
     private final Alignment source;
     private byte[] sequence = null;
 
-    private Map<String, Object> attributeMap = null;
-
+    private final AttributableHelper attributableHelper = new AttributableHelper();
 }
