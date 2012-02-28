@@ -39,6 +39,10 @@ public class ConsensusSequence implements Sequence {
         this.includeAmbiguities = includeAmbiguities;
     }
 
+    public Alignment getSource() {
+        return source;
+    }
+
     /**
      * @return the type of symbols that this sequence is made up of.
      */
