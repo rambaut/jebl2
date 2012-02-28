@@ -124,7 +124,7 @@ public class BasicAlignment implements Alignment {
         if( taxonList.indexOf(sequence.getTaxon()) >= 0 ) {
            throw new IllegalArgumentException("duplicate sequence name " + sequence.getTaxon());
         }
-        
+
         sequences.put(sequence.getTaxon(), sequence);
         taxonList.add(sequence.getTaxon());
     }
@@ -230,6 +230,9 @@ public class BasicAlignment implements Alignment {
                     maxCount = counts[state.getIndex()];
                     mostFrequentState = state;
                 }
+            }
+            if (mostFrequentState == null) {
+                return sequenceType.getUnknownState();
             }
             return mostFrequentState;
         }
