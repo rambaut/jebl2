@@ -36,7 +36,7 @@ public class MutableRootedTree implements RootedTree {
         Node root = tree.getAdjacencies(outGroup).get(0);
 
         try {
-            MutableRootedNode newSubtreeRoot = rootAdjaceincesWith(tree, root, outGroup);
+            MutableRootedNode newSubtreeRoot = rootAdjacenciesWith(tree, root, outGroup);
 
 
             // Add the outgroup in
@@ -54,6 +54,18 @@ public class MutableRootedTree implements RootedTree {
         }
     }
 
+    /**
+     * Construct a rooted tree from an immutable rooted tree.
+     *
+     * @param tree      Rooted tree to copy
+     */
+    public MutableRootedTree(RootedTree tree) {
+        try {
+            rootNode = rootAdjacenciesWith(tree, tree.getRootNode(), null);
+        } catch (NoEdgeException e) {
+            // bug
+        }
+    }
 
     /**
      *  Remove internal node. Move all children to their grandparent.
@@ -125,7 +137,7 @@ public class MutableRootedTree implements RootedTree {
      * @return  rooted subtree.
      * @throws NoEdgeException
      */
-    private MutableRootedNode rootAdjaceincesWith(Tree tree, Node node, Node parent) throws NoEdgeException {
+    private MutableRootedNode rootAdjacenciesWith(Tree tree, Node node, Node parent) throws NoEdgeException {
         if( tree.isExternal(node) ) {
             return (MutableRootedNode)createExternalNode( tree.getTaxon(node) );
         }
@@ -133,7 +145,7 @@ public class MutableRootedTree implements RootedTree {
         List<Node> children = new ArrayList<Node>();
         for( Node adj : tree.getAdjacencies(node) ) {
             if( adj == parent ) continue;
-            MutableRootedNode rootedAdj = rootAdjaceincesWith(tree, adj, node);
+            MutableRootedNode rootedAdj = rootAdjacenciesWith(tree, adj, node);
             setLength(rootedAdj, tree.getEdgeLength(adj, node));
             children.add(rootedAdj);
         }
