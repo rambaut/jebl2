@@ -32,8 +32,8 @@ public class SortedRootedTree extends FilteredRootedTree {
 		    case INCREASING_NODE_DENSITY:
 			    this.comparator = new Comparator<Node>() {
 			        public int compare(Node node1, Node node2) {
-			            return jebl.evolution.trees.Utils.getExternalNodeCount(source, node1) -
-					            jebl.evolution.trees.Utils.getExternalNodeCount(source, node2);
+			            return jebl.evolution.trees.Utils.getExternalNodeCount(source, node2) -
+					            jebl.evolution.trees.Utils.getExternalNodeCount(source, node1);
 			        }
 
 			        public boolean equals(Node node1, Node node2) {
@@ -44,8 +44,8 @@ public class SortedRootedTree extends FilteredRootedTree {
 		    case DECREASING_NODE_DENSITY:
 			    this.comparator = new Comparator<Node>() {
 			        public int compare(Node node1, Node node2) {
-			            return jebl.evolution.trees.Utils.getExternalNodeCount(source, node2) -
-					            jebl.evolution.trees.Utils.getExternalNodeCount(source, node1);
+			            return jebl.evolution.trees.Utils.getExternalNodeCount(source, node1) -
+					            jebl.evolution.trees.Utils.getExternalNodeCount(source, node2);
 			        }
 
 			        public boolean equals(Node node1, Node node2) {
