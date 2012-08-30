@@ -20,16 +20,29 @@ public class Utils {
     private Utils() { }  // make class uninstantiable
 
     /**
-	 * Translates a given {@link Sequence} to a corresponding {@link Sequence} under the given genetic code.
-	 * Simply a utility function that calls AminoAcidState[] translate(final State[] states, GeneticCode geneticCode)
-	 *
-	 * @param sequence the Sequence.
-	 * @param geneticCode
-	 * @return
-	 */
-	public static Sequence translate(final Sequence sequence, GeneticCode geneticCode) {
-		return new BasicSequence(SequenceType.AMINO_ACID, sequence.getTaxon(), translate(sequence.getStates(), geneticCode));
-	}
+     * Translates a given {@link Sequence} to a corresponding {@link Sequence} under the given genetic code.
+     * Simply a utility function that calls AminoAcidState[] translate(final State[] states, GeneticCode geneticCode)
+     *
+     * @param sequence the Sequence.
+     * @param geneticCode
+     * @return
+     */
+    public static Sequence translate(final Sequence sequence, GeneticCode geneticCode) {
+        return new BasicSequence(SequenceType.AMINO_ACID, sequence.getTaxon(), translate(sequence.getStates(), geneticCode));
+    }
+
+    /**
+     * Translates a given {@link Sequence} to a corresponding {@link Sequence} under the given genetic code.
+     * Simply a utility function that calls AminoAcidState[] translate(final State[] states, GeneticCode geneticCode)
+     *
+     * @param sequence the Sequence.
+     * @param geneticCode
+     * @param readingFrame
+     * @return
+     */
+    public static Sequence translate(final Sequence sequence, GeneticCode geneticCode, int readingFrame) {
+        return new BasicSequence(SequenceType.AMINO_ACID, sequence.getTaxon(), translate(sequence.getStates(), geneticCode, readingFrame));
+    }
 
     /**
      * Translates each of a given sequence of {@link NucleotideState}s or {@link CodonState}s
@@ -45,18 +58,47 @@ public class Utils {
      * @return
      */
     public static AminoAcidState[] translate(final State[] states, GeneticCode geneticCode) {
+        return translate(states, geneticCode, 1);
+    }
+
+    /**
+     * Translates each of a given sequence of {@link NucleotideState}s or {@link CodonState}s
+     * to the {@link AminoAcidState} corresponding to it under the given genetic code.
+     *
+     * Translation doesn't stop at stop codons; these are translated to {@link AminoAcids#STOP_STATE}.
+     * If translating from {@link jebl.evolution.sequences.NucleotideState} and the number
+     * of states is not a multiple of 3, then the excess states at the end are silently dropped.
+     *
+     * @param states States to translate; must all be of the same type, either NucleotideState
+     *        or CodonState.
+     * @param geneticCode
+     * @param readingFrame
+     * @return
+     */
+    public static AminoAcidState[] translate(final State[] states, GeneticCode geneticCode, int readingFrame) {
         if (states == null) throw new NullPointerException("States array is null");
         if (states.length == 0) return new AminoAcidState[0];
 
+        if (readingFrame < 1 || readingFrame > 3) {
+            throw new IllegalArgumentException("Reading frame should be between 1 and 3");
+        }
+
         if (states[0] instanceof NucleotideState) {
-            AminoAcidState[] translation = new AminoAcidState[states.length / 3];
+            int offset = readingFrame - 1;
+            int length = states.length - offset;
+            if (length == 0) return new AminoAcidState[0];
+
+            AminoAcidState[] translation = new AminoAcidState[length / 3];
             for (int i = 0; i < translation.length; i++) {
-                translation[i] = geneticCode.getTranslation((NucleotideState)states[i * 3],
-                                                            (NucleotideState)states[(i * 3) + 1],
-                                                            (NucleotideState)states[(i * 3) + 2]);
+                translation[i] = geneticCode.getTranslation((NucleotideState)states[i * 3 + offset],
+                        (NucleotideState)states[(i * 3) + offset + 1],
+                        (NucleotideState)states[(i * 3) + offset + 2]);
             }
             return translation;
         } else if (states[0] instanceof CodonState) {
+            if (readingFrame != 1) {
+                throw new IllegalArgumentException("Can't translate codon sequences in anything other than reading frame 1");
+            }
             AminoAcidState[] translation = new AminoAcidState[states.length];
             for (int i = 0; i < translation.length; i++) {
                 translation[i] = geneticCode.getTranslation((CodonState)states[i]);
@@ -337,41 +379,41 @@ public class Utils {
         return result;
     }
 
-	/**
-	 * Produce a clean sequence filtered of spaces and digits.
-	 * @param seq the sequence
-	 * @param type the sequence type
-	 * @return An array of valid states of SequenceType (may be shorter than the original sequence)
-	 */
-	public static State[] cleanSequence(final CharSequence seq, final SequenceType type) {
-		int count = 0;
-		for (int i = 0; i < seq.length(); i++) {
-			final char c = seq.charAt(i);
-		    if (type.getState(c) != null) {
-		        count++;
-		    }
-		}
+    /**
+     * Produce a clean sequence filtered of spaces and digits.
+     * @param seq the sequence
+     * @param type the sequence type
+     * @return An array of valid states of SequenceType (may be shorter than the original sequence)
+     */
+    public static State[] cleanSequence(final CharSequence seq, final SequenceType type) {
+        int count = 0;
+        for (int i = 0; i < seq.length(); i++) {
+            final char c = seq.charAt(i);
+            if (type.getState(c) != null) {
+                count++;
+            }
+        }
 
-		State[] cleaned = new State[count];
-		int index = 0;
-		for (int i = 0; i < seq.length(); i++) {
-			final char c = seq.charAt(i);
-			State state = type.getState(c);
-		    if (state != null) {
-			    cleaned[index] = state;
-			    index += 1;
-		    }
-		}
+        State[] cleaned = new State[count];
+        int index = 0;
+        for (int i = 0; i < seq.length(); i++) {
+            final char c = seq.charAt(i);
+            State state = type.getState(c);
+            if (state != null) {
+                cleaned[index] = state;
+                index += 1;
+            }
+        }
 
-		return cleaned;
-	}
+        return cleaned;
+    }
 
-	public static String toString(State[] states) {
-		StringBuilder builder = new StringBuilder();
-		for (State state : states) {
-			builder.append(state.getCode());
-		}
-		return builder.toString();
-	}
+    public static String toString(State[] states) {
+        StringBuilder builder = new StringBuilder();
+        for (State state : states) {
+            builder.append(state.getCode());
+        }
+        return builder.toString();
+    }
 
 }
