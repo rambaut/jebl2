@@ -161,10 +161,8 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     }
 
     public void exportTrees(Collection<? extends Tree> trees) throws IOException {
-        // all trees in a set should have the same taxa
-        establishTreeTaxa(trees.iterator().next());
         writer.println("begin trees;");
-        writeTrees(trees, true);
+        writeTrees(trees, false);
         writer.println("end;");
     }
 
