@@ -164,18 +164,18 @@ public class RootedTreeUtils {
 		int matches = 0;
 
 		for (Node child : tree.getChildren(node)) {
-			if (tree.isExternal(child)) {
-				if (tipNodes.contains(child)) {
-					matches ++;
-				}
-			} else {
+            // AR - I see no reason to restrict this to external nodes.
+            if (tipNodes.contains(child)) {
+                matches ++;
+            }
 
+            if (!tree.isExternal(child)) {
 				matches += getCommonAncestorNode(tree, child, tipNodes, mrca);
 
 				if (mrca[0] != null) {
 					return matches;
 				}
-			}
+            }
 		}
 
 		// If we haven't already found the MRCA, test this node
