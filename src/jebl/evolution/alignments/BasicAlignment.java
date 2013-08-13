@@ -238,16 +238,20 @@ public class BasicAlignment implements Alignment {
         }
 
 	    public double getStateFrequency(State state) {
-		    double count = 0;
-		    for (State s : states) {
-			    if (s == state) {
-				    count += 1;
-			    }
-		    }
-		    return count / states.size();
+		    return ((double)getStateCount(state)) / states.size();
 	    }
 
-	    private final List<State> states;
+        public int getStateCount(State state) {
+            int count = 0;
+            for (State s : states) {
+                if (s == state) {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+
+        private final List<State> states;
     }
 
 }
