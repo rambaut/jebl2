@@ -1,9 +1,6 @@
 package jebl.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author rambaut
@@ -32,6 +29,6 @@ public class AttributableHelper implements Attributable {
 		return Collections.unmodifiableMap(attributeMap);
 	}
 
-	Map<String, Object> attributeMap = new HashMap<String, Object>();
+	Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
 }
 
