@@ -80,4 +80,11 @@ public interface Pattern {
 	 * @return the frequency
 	 */
 	double getStateFrequency(State state);
+
+    /**
+     * Returns the count of the given state in this pattern
+     * @param state
+     * @return the count
+     */
+    int getStateCount(State state);
 }
