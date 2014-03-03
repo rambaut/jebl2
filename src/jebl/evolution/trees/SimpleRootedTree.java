@@ -145,7 +145,9 @@ final public class SimpleRootedTree implements RootedTree {
         }
 
         SimpleRootedNode node = new SimpleRootedNode(taxon);
-        externalNodes.put(taxon, node);
+        //externalNodes.put(taxon, node);
+        externalNodes.add(node);
+        taxa.add(taxon);
         return node;
     }
 
@@ -372,7 +374,8 @@ final public class SimpleRootedTree implements RootedTree {
      *         These nodes are often refered to as 'tips'.
      */
     public Set<Node> getExternalNodes() {
-        return new LinkedHashSet<Node>(externalNodes.values());
+        return externalNodes;
+//        return new LinkedHashSet<Node>(externalNodes.values());
     }
 
     /**
@@ -389,7 +392,8 @@ final public class SimpleRootedTree implements RootedTree {
      *         same as the size of the external nodes set.
      */
     public Set<Taxon> getTaxa() {
-        return new LinkedHashSet<Taxon>(externalNodes.keySet());
+        return taxa;
+//        return new LinkedHashSet<Taxon>(externalNodes.keySet());
     }
 
     /**
@@ -421,11 +425,17 @@ final public class SimpleRootedTree implements RootedTree {
      *         if the taxon is not a member of the taxa set associated with this tree.
      */
     public Node getNode(Taxon taxon) {
-        return externalNodes.get(taxon);
+        if (externalNodeMap == null) {
+            externalNodeMap = new LinkedHashMap<Taxon, Node>();
+            for (Node node : getExternalNodes()) {
+                externalNodeMap.put(((SimpleRootedNode)node).getTaxon(), node);
+            }
+        }
+        return externalNodeMap.get(taxon);
     }
 
     public void renameTaxa(Taxon from, Taxon to) {
-        SimpleRootedNode node = (SimpleRootedNode)externalNodes.get(from);
+        SimpleRootedNode node = (SimpleRootedNode)getNode(from);
 
         // TT: The javadoc doesn't specify whether renameTaxa() should fail or silently do nothing
         // if Taxon from doesn't exist. But the code already threw a NullPointerException before (bug 4824),
@@ -436,8 +446,8 @@ final public class SimpleRootedTree implements RootedTree {
 
         node.setTaxa(to);
 
-        externalNodes.remove(from);
-        externalNodes.put(to, node);
+//        externalNodes.remove(from);
+//        externalNodes.put(to, node);
     }
 
     /**
@@ -527,7 +537,7 @@ final public class SimpleRootedTree implements RootedTree {
 	 */
 	public Set<Node> getNodes() {
 	    Set<Node> nodes = new LinkedHashSet<Node>(internalNodes);
-	    nodes.addAll(externalNodes.values());
+	    nodes.addAll(getExternalNodes());
 	    return nodes;
 	}
 
@@ -712,7 +722,11 @@ final public class SimpleRootedTree implements RootedTree {
 
     protected SimpleRootedNode rootNode = null;
     protected final Set<Node> internalNodes = new LinkedHashSet<Node>();
-    private final Map<Taxon, Node> externalNodes = new LinkedHashMap<Taxon, Node>();
+    private final Set<Node> externalNodes = new LinkedHashSet<Node>();
+    private final Set<Taxon> taxa = new LinkedHashSet<Taxon>();
+
+    // Not created initially for efficiency reasons. Will be created lazily as needed.
+    private Map<Taxon, Node> externalNodeMap = null;
 
     private boolean heightsKnown = false;
     private boolean lengthsKnown = false;
