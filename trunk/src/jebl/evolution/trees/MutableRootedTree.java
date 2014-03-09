@@ -83,6 +83,32 @@ public class MutableRootedTree implements RootedTree {
     }
 
     /**
+     *  Insert a child node.
+     *  @param child to be added
+     *  @param parent into which it should be added
+     */
+    public void addChild(Node child, Node parent) {
+        ((MutableRootedNode)parent).addChild((MutableRootedNode)child);
+    }
+
+    /**
+     *  Remove a child node.
+     *  @param child to be removed
+     *  @param parent from which it should be removed
+     */
+    public void removeChild(Node child, Node parent) {
+        ((MutableRootedNode)parent).removeChild((MutableRootedNode)child);
+    }
+
+    /**
+     *  Set the root node.
+     *  @param root the new root node
+     */
+    public void setRoot(Node root) {
+        this.rootNode = (MutableRootedNode)root;
+    }
+
+    /**
      *
      * @param node     Node to refine
      * @param leftSet  indices of children in the left new subtree.
