@@ -360,7 +360,9 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
                     }
                 }
             }
-            if( !exclude && !key.startsWith("&") ) {
+            Object value = item.getAttribute(key);
+
+            if( !exclude && !key.startsWith("&") && value != null ) {
                 if (first) {
                     builder.append("[&");
                     first = false;
@@ -376,7 +378,6 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
 
                 builder.append('=');
 
-                Object value = item.getAttribute(key);
                 appendAttributeValue(value, builder);
             }
         }
