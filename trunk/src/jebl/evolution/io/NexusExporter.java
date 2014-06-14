@@ -128,7 +128,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     private void writeTrees(Collection<? extends Tree> trees, boolean checkTaxa) throws IOException {
         int nt = 0;
         for( Tree t : trees ) {
-            if( checkTaxa && establishTreeTaxa(t) ) {
+            if( checkTaxa && !establishTreeTaxa(t) ) {
                 throw new IllegalArgumentException();
             }
             final boolean isRooted = t instanceof RootedTree;
@@ -161,6 +161,19 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     }
 
     public void exportTrees(Collection<? extends Tree> trees) throws IOException {
+        exportTrees(trees, false);
+    }
+
+    public void exportTrees(Collection<? extends Tree> trees, boolean writeTaxa) throws IOException {
+        if (writeTaxa) {
+            TreeSet<Taxon> taxa = new TreeSet<Taxon>();
+            for (Tree tree : trees) {
+                taxa.addAll(tree.getTaxa());
+            }
+
+            establishTaxa(taxa);
+        }
+
         writer.println("begin trees;");
         writeTrees(trees, false);
         writer.println("end;");
@@ -203,16 +216,16 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
 
     /**
      * Write a new taxa block and record them for later reference.
-     * @param taxons
+     * @param taxonArray
      */
-    private void setTaxa(Taxon[] taxons) {
-        taxa = new HashSet<Taxon>();
+    private void setTaxa(Taxon[] taxonArray) {
+        this.taxa = new HashSet<Taxon>();
 
         writer.println("begin taxa;");
-        writer.println("\tdimensions ntax=" + taxons.length + ";");
+        writer.println("\tdimensions ntax=" + taxonArray.length + ";");
         writer.println("\ttaxlabels");
 
-        for (Taxon taxon : taxons) {
+        for (Taxon taxon : taxonArray) {
             taxa.add(taxon);
 
             StringBuilder builder = new StringBuilder("\t");
