@@ -404,7 +404,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
         }
 
         if (value instanceof Color) {
-            return builder.append("#").append(((Color)value).getRGB());
+            return builder.append("#").append(Integer.toHexString(((Color)value).getRGB()).substring(2));
         }
 
         if (value instanceof String) {
