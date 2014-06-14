@@ -1410,10 +1410,16 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         if (value.startsWith("#")) {
             // I am not sure whether this is a good idea but
             // I am going to assume that a # denotes an RGB colour
-            try {
-                return Color.decode(value.substring(1));
-            } catch (NumberFormatException nfe1) {
-                // not a colour
+            String colourValue = value.substring(1);
+            if (colourValue.startsWith("-")) {
+                // old style decimal numbers
+                try {
+                    return Color.decode(colourValue);
+                } catch (NumberFormatException nfe1) {
+                    // not a colour
+                }
+            } else {
+                return Color.decode("0x" + colourValue);
             }
         }
 
