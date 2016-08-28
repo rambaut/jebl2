@@ -1360,7 +1360,8 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         // value=number, value="string", value={item1, item2, item3}
         // (label must be quoted if it contains spaces (i.e. "my label"=label)
 
-        Pattern pattern = Pattern.compile("(\"[^\"]*\"+|[^,=\\s]+)\\s*(=\\s*(\\{[^=}]*\\}|\"[^\"]*\"+|[^,]+))?");
+//        Pattern pattern = Pattern.compile("(\"[^\"]*\"+|[^,=\\s]+)\\s*(=\\s*(\\{[^=}]*\\}|\"[^\"]*\"+|[^,]+))?");
+        Pattern pattern = Pattern.compile("(\"[^\"]*\"+|[^,=\\s]+)\\s*(=\\s*(\\{(\\{[^\\}]+\\},?)+\\}|\\{[^\\}]+\\}|\"[^\"]*\"+|[^,]+))?");
         Matcher matcher = pattern.matcher(meta);
 
         while (matcher.find()) {
@@ -1397,9 +1398,23 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         value = value.trim();
 
         if (value.startsWith("{")) {
-            // the value is a list so recursively parse the elements
-            // and return an array
-            String[] elements = value.substring(1, value.length() - 1).split(",");
+            value = value.substring(1, value.length() - 1);
+
+            String[] elements;
+
+            if (value.startsWith("{")) {
+                // the value is a list of a list so recursively parse the elements
+                // and return an array
+
+                // need to match },{ but leave the brackets in place
+                value = value.replaceAll("\\},\\{","}@,@{");
+                elements = value.split("@,@");
+
+            } else {
+                // the value is a list so recursively parse the elements
+                // and return an array
+                elements = value.split(",");
+            }
             Object[] values = new Object[elements.length];
             for (int i = 0; i < elements.length; i++) {
                 values[i] = parseValue(elements[i]);

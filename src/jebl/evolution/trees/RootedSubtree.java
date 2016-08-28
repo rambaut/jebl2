@@ -54,6 +54,12 @@ final public class RootedSubtree implements RootedTree {
             }
             if (children.size() >= 2) {
                 newNode = createInternalNode(children);
+
+                for( Map.Entry<String, Object> e : node.getAttributeMap().entrySet() ) {
+                    newNode.setAttribute(e.getKey(), e.getValue());
+                }
+
+                setHeight(newNode, tree.getHeight(node));
             } else if (children.size() == 1) {
 
                 newNode = children.get(0);
@@ -62,17 +68,6 @@ final public class RootedSubtree implements RootedTree {
                 newNode = null;
             }
         }
-
-        if (newNode != null) {
-//        final Map<String, Object> map = node.getAttributeMap();
-//        if( ! map.isEmpty() ) {
-            for( Map.Entry<String, Object> e : node.getAttributeMap().entrySet() ) {
-                newNode.setAttribute(e.getKey(), e.getValue());
-            }
-            // }
-            setHeight(newNode, tree.getHeight(node));
-        }
-
 
         return newNode;
     }
