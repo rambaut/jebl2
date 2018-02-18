@@ -56,4 +56,40 @@ public interface Sequence extends Attributable, Comparable {
 	 * @return the length
 	 */
     int getLength();
+
+	/**
+	 * Append two sequences together to create a new sequence object. New sequence has the taxon of
+	 * the first sequence.
+	 * @param sequence1
+	 * @param sequence2
+	 * @return
+	 */
+    public static Sequence appendSequences(Sequence sequence1, Sequence sequence2) {
+    	if (sequence1.getSequenceType() != sequence2.getSequenceType()) {
+    		throw new IllegalArgumentException("sequences to be appended not of the same type");
+		}
+		State[] states = new State[sequence1.getLength() + sequence2.getLength()];
+    	System.arraycopy(sequence1.getStates(), 0, states, 0, sequence1.getLength());
+		System.arraycopy(sequence2.getStates(), 0, states, sequence1.getLength(), sequence2.getLength());
+		return new BasicSequence(sequence1.getSequenceType(), sequence1.getTaxon(), states);
+	}
+
+	/**
+	 * Returns a sub-sequence for states from, to (inclusive).
+	 * @param sequence
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public static Sequence getSubSequence(Sequence sequence, int from, int to) {
+		if (from > to) {
+			throw new IllegalArgumentException("subsequence from is greater than to");
+		}
+		if (from >= sequence.getLength() || to >= sequence.getLength()) {
+			throw new IllegalArgumentException("subsequence range out of bounds");
+		}
+		State[] states = new State[to - from + 1];
+		System.arraycopy(sequence.getStates(), from, states, 0, states.length);
+		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), states);
+	}
 }
