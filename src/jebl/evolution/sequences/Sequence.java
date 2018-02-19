@@ -11,6 +11,11 @@ package jebl.evolution.sequences;
 import jebl.evolution.taxa.Taxon;
 import jebl.util.Attributable;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * A biomolecular sequence.
  *
@@ -92,4 +97,20 @@ public interface Sequence extends Attributable, Comparable {
 		System.arraycopy(sequence.getStates(), from, states, 0, states.length);
 		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), states);
 	}
+
+    public static Sequence trimSequence(Sequence sequence, State[] trimStates) {
+	    Set<State> trimSet = new HashSet<>(Arrays.asList(trimStates));
+        State[] sourceStates = sequence.getStates();
+        int i = 0;
+        while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
+            i++;
+        }
+        Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
+        sourceStates = sequence1.getStates();
+        i = sourceStates.length - 1;
+        while (i > 0 && trimSet.contains(sourceStates[i])) {
+            i--;
+        }
+        return getSubSequence(sequence1, 0, i);
+    }
 }
