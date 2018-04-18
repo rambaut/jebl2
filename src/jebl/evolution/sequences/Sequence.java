@@ -88,10 +88,10 @@ public interface Sequence extends Attributable, Comparable {
 	 */
 	public static Sequence getSubSequence(Sequence sequence, int from, int to) {
 		if (from > to) {
-			throw new IllegalArgumentException("subsequence from is greater than to");
+			throw new IllegalArgumentException("sub-sequence from is greater than to");
 		}
 		if (from >= sequence.getLength() || to >= sequence.getLength()) {
-			throw new IllegalArgumentException("subsequence range out of bounds");
+			throw new IllegalArgumentException("sub-sequence range out of bounds");
 		}
 		State[] states = new State[to - from + 1];
 		System.arraycopy(sequence.getStates(), from, states, 0, states.length);
@@ -105,12 +105,16 @@ public interface Sequence extends Attributable, Comparable {
         while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
             i++;
         }
-        Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
-        sourceStates = sequence1.getStates();
-        i = sourceStates.length - 1;
-        while (i > 0 && trimSet.contains(sourceStates[i])) {
-            i--;
+        if (i < sourceStates.length) {
+            Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
+            sourceStates = sequence1.getStates();
+            i = sourceStates.length - 1;
+            while (i > 0 && trimSet.contains(sourceStates[i])) {
+                i--;
+            }
+            return getSubSequence(sequence1, 0, i);
+        } else {
+            return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), new State[] {});
         }
-        return getSubSequence(sequence1, 0, i);
     }
 }

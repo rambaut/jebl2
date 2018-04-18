@@ -380,6 +380,28 @@ public class Utils {
     }
 
     /**
+     * Counts the number of stop codons in an amino acid sequence
+     * @param sequence the sequence string to count stop codons
+     * @return the number of stop codons
+     */
+    public static int getStopCodonCount(final Sequence sequence) {
+
+        if (sequence.getSequenceType() != SequenceType.AMINO_ACID) {
+            throw new IllegalArgumentException("Sequence should be an amino acid sequence");
+        }
+
+        int count = 0;
+        for (State state : sequence.getStates()) {
+            if (((AminoAcidState)state).isStop()) {
+                count ++;
+            }
+        }
+
+        return count;
+    }
+
+
+    /**
      * Produce a clean sequence filtered of spaces and digits.
      * @param seq the sequence
      * @param type the sequence type
