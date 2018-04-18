@@ -26,20 +26,20 @@ import java.util.Set;
  */
 public interface Sequence extends Attributable, Comparable {
 
-    /**
-     * @return the taxon that this sequence represents (primarily used to match sequences with tree nodes)
-     */
-    Taxon getTaxon();
+	/**
+	 * @return the taxon that this sequence represents (primarily used to match sequences with tree nodes)
+	 */
+	Taxon getTaxon();
 
-    /**
-     * @return the type of symbols that this sequence is made up of.
-     */
-    SequenceType getSequenceType();
+	/**
+	 * @return the type of symbols that this sequence is made up of.
+	 */
+	SequenceType getSequenceType();
 
-    /**
-     * @return a string representing the sequence of symbols.
-     */
-    String getString();
+	/**
+	 * @return a string representing the sequence of symbols.
+	 */
+	String getString();
 
 	/**
 	 * @return an array of state objects.
@@ -51,16 +51,16 @@ public interface Sequence extends Attributable, Comparable {
 	 */
 	byte[] getStateIndices();
 
-    /**
-     * @return the state at site.
-     */
-    State getState(int site);
+	/**
+	 * @return the state at site.
+	 */
+	State getState(int site);
 
 	/**
 	 * Get the length of the sequence
 	 * @return the length
 	 */
-    int getLength();
+	int getLength();
 
 	/**
 	 * Append two sequences together to create a new sequence object. New sequence has the taxon of
@@ -69,12 +69,12 @@ public interface Sequence extends Attributable, Comparable {
 	 * @param sequence2
 	 * @return
 	 */
-    public static Sequence appendSequences(Sequence sequence1, Sequence sequence2) {
-    	if (sequence1.getSequenceType() != sequence2.getSequenceType()) {
-    		throw new IllegalArgumentException("sequences to be appended not of the same type");
+	public static Sequence appendSequences(Sequence sequence1, Sequence sequence2) {
+		if (sequence1.getSequenceType() != sequence2.getSequenceType()) {
+			throw new IllegalArgumentException("sequences to be appended not of the same type");
 		}
 		State[] states = new State[sequence1.getLength() + sequence2.getLength()];
-    	System.arraycopy(sequence1.getStates(), 0, states, 0, sequence1.getLength());
+		System.arraycopy(sequence1.getStates(), 0, states, 0, sequence1.getLength());
 		System.arraycopy(sequence2.getStates(), 0, states, sequence1.getLength(), sequence2.getLength());
 		return new BasicSequence(sequence1.getSequenceType(), sequence1.getTaxon(), states);
 	}
@@ -88,33 +88,34 @@ public interface Sequence extends Attributable, Comparable {
 	 */
 	public static Sequence getSubSequence(Sequence sequence, int from, int to) {
 		if (from > to) {
-			throw new IllegalArgumentException("sub-sequence from is greater than to");
+			throw new IllegalArgumentException("subsequence from is greater than to");
 		}
 		if (from >= sequence.getLength() || to >= sequence.getLength()) {
-			throw new IllegalArgumentException("sub-sequence range out of bounds");
+			throw new IllegalArgumentException("subsequence range out of bounds");
 		}
 		State[] states = new State[to - from + 1];
 		System.arraycopy(sequence.getStates(), from, states, 0, states.length);
 		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), states);
 	}
 
-    public static Sequence trimSequence(Sequence sequence, State[] trimStates) {
-	    Set<State> trimSet = new HashSet<>(Arrays.asList(trimStates));
-        State[] sourceStates = sequence.getStates();
-        int i = 0;
-        while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
-            i++;
-        }
-        if (i < sourceStates.length) {
-            Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
-            sourceStates = sequence1.getStates();
-            i = sourceStates.length - 1;
-            while (i > 0 && trimSet.contains(sourceStates[i])) {
-                i--;
-            }
-            return getSubSequence(sequence1, 0, i);
-        } else {
-            return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), new State[] {});
-        }
-    }
+	public static Sequence trimSequence(Sequence sequence, State[] trimStates) {
+		Set<State> trimSet = new HashSet<>(Arrays.asList(trimStates));
+		State[] sourceStates = sequence.getStates();
+		int i = 0;
+		while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
+			i++;
+		}
+		if (i == sourceStates.length) {
+			return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), new State[] {} );
+		}
+
+		Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
+		sourceStates = sequence1.getStates();
+		i = sourceStates.length - 1;
+		while (i > 0 && trimSet.contains(sourceStates[i])) {
+			i--;
+		}
+		return getSubSequence(sequence1, 0, i);
+
+	}
 }
