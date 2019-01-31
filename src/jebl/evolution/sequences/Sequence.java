@@ -105,17 +105,35 @@ public interface Sequence extends Attributable, Comparable {
 		while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
 			i++;
 		}
-		if (i == sourceStates.length) {
-			return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), new State[] {} );
+		if (i < sourceStates.length) {
+			Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
+			sourceStates = sequence1.getStates();
+			i = sourceStates.length - 1;
+			while (i > 0 && trimSet.contains(sourceStates[i])) {
+				i--;
+			}
+			return getSubSequence(sequence1, 0, i);
+		} else {
+			return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), new State[] {});
 		}
-
-		Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
-		sourceStates = sequence1.getStates();
-		i = sourceStates.length - 1;
-		while (i > 0 && trimSet.contains(sourceStates[i])) {
-			i--;
-		}
-		return getSubSequence(sequence1, 0, i);
-
 	}
+
+	/**
+	 * Counts the number of occurances of a state
+	 * @param sequence the sequence string to count
+	 * @param state the state
+	 * @return the number of occurances
+	 */
+	public static int getStateCount(final Sequence sequence, final State state) {
+
+		int count = 0;
+		for (State s : sequence.getStates()) {
+			if (s.equals(state)) {
+				count ++;
+			}
+		}
+
+		return count;
+	}
+
 }

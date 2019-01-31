@@ -30,7 +30,7 @@
 
     <target name="compile-jebl" depends="init">
         <!-- Compile the java code from ${src} into ${build} -->
-        <javac source="1.6" srcdir="${src}" destdir="${build}" debug="true" target="1.6">
+        <javac source="1.8" srcdir="${src}" destdir="${build}" debug="true" target="1.8">
             <include name="jebl/**/*"/>
         </javac>
         <copy todir="${build}">

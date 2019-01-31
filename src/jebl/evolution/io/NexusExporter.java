@@ -317,6 +317,15 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
      * @param builder
      */
     private void appendTree(RootedTree tree, Node node, StringBuilder builder) {
+
+        Node p = tree.getParent(node);
+        while (p != null) {
+            if (p == node) {
+                System.err.println("Circular reference in tree structure");
+            }
+            p = tree.getParent(p);
+        }
+
         if (tree.isExternal(node)) {
             appendTaxonName(tree.getTaxon(node), builder);
 
