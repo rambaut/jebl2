@@ -259,6 +259,39 @@ public final class Nucleotides {
 	    return seq;
 	}
 
+    /**
+     * Convert an array of nucleotide states into an array of codon states
+     * @param states the nucleotide states
+     * @param readingFrame the reading frame (1 to 3)
+     * @return the codon states
+     */
+    public static CodonState[] toCodons(final State[] states, int readingFrame) {
+        if (states == null) throw new NullPointerException("States array is null");
+        if (states.length == 0) return new CodonState[0];
+
+        if (readingFrame < 1 || readingFrame > 3) {
+            throw new IllegalArgumentException("Reading frame should be between 1 and 3");
+        }
+
+        if (states[0] instanceof NucleotideState) {
+            int offset = readingFrame - 1;
+            int length = states.length - offset;
+
+            if (length == 0) return new CodonState[0];
+
+            CodonState[] conversion = new CodonState[length / 3];
+            for (int i = 0; i < conversion.length; i++) {
+                conversion[i] = Codons.getState(
+                        (NucleotideState)states[i * 3 + offset],
+                        (NucleotideState)states[(i * 3) + offset + 1],
+                        (NucleotideState)states[(i * 3) + offset + 2]);
+            }
+            return conversion;
+        } else {
+            throw new IllegalArgumentException("Given states are not nucleotides so cannot be converted");
+        }
+    }
+
     private static final NucleotideState[] statesByCode;
 
     static {
