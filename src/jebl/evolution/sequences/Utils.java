@@ -10,6 +10,10 @@ package jebl.evolution.sequences;
 
 import jebl.evolution.taxa.Taxon;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Andrew Rambaut
  * @author Alexei Drummond
@@ -215,24 +219,34 @@ public class Utils {
         return translateCharSequence(nucleotideSequence, geneticCode);
     }
 
+    /**
+     * Strips a sequence of gaps
+     * @param sequence the sequence
+     * @return the stripped sequence
+     */
     public static State[] stripGaps(final State[] sequence) {
-        int count = 0;
+        if (sequence.length == 0) {
+            return new State[] {};
+        }
+
+        return stripStates(sequence, Collections.singletonList(sequence[0].getType().getGapState()));
+    }
+
+    /**
+     * Strips a sequence of any states given
+     * @param sequence the sequence
+     * @param stripStates the states to strip
+     * @return an array of states
+     */
+    public static State[] stripStates(final State[] sequence, final List<State> stripStates) {
+        List<State> stripped = new ArrayList<State>();
         for (State state : sequence) {
-            if (!state.isGap()) {
-                count++;
+            if (!stripStates.contains(state)) {
+                stripped.add(state);
             }
         }
 
-        State[] stripped = new State[count];
-        int index = 0;
-        for (State state : sequence) {
-            if (!state.isGap()) {
-                stripped[index] = state;
-                index += 1;
-            }
-        }
-
-        return stripped;
+        return stripped.toArray(new State[0]);
     }
 
     public static State[] reverse(final State[] sequence) {

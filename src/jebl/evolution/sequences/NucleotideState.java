@@ -35,6 +35,6 @@ public final class NucleotideState extends State {
 		return this == Nucleotides.GAP_STATE;
 	}
 
-
+    public SequenceType getType() { return SequenceType.NUCLEOTIDE; }
 
 }

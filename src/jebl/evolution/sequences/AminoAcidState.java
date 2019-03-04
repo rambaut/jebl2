@@ -51,4 +51,6 @@ public final class AminoAcidState extends State {
 	public boolean isStop() {
 		return this == AminoAcids.STOP_STATE;
 	}
+
+    public SequenceType getType() { return SequenceType.AMINO_ACID; }
 }

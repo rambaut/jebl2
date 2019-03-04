@@ -89,7 +89,9 @@ public abstract class State implements Comparable {
 
     public abstract boolean isGap();
 
-	private String stateCode;
+    public abstract SequenceType getType();
+
+    private String stateCode;
     private String name;
     private Set<State> ambiguities;
     private int index;
