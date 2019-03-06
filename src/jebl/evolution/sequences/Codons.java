@@ -89,7 +89,17 @@ public final class Codons {
 
 	public static boolean isGap(CodonState state) { return state == GAP_STATE; }
 
-	public static NucleotideState[] toNucleotides(CodonState state) {
+    public static NucleotideState[] toNucleotides(State[] states) {
+        NucleotideState[] nucs = new NucleotideState[states.length * 3];
+        int i = 0;
+        for (State state : states) {
+            System.arraycopy(toNucleotides((CodonState)state), 0, nucs, i, 3);
+            i += 3;
+        }
+        return nucs;
+    }
+
+    public static NucleotideState[] toNucleotides(CodonState state) {
 		NucleotideState[] nucs = new NucleotideState[3];
 		String code = state.getCode();
 		nucs[0] = Nucleotides.getState(code.charAt(0));

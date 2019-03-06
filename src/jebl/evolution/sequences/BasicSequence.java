@@ -111,7 +111,11 @@ public class BasicSequence implements Sequence {
      * @return an array of state objects.
      */
     public State[] getStates() {
-        return sequenceType.toStateArray(getStateIndices());
+        if (sequenceType == SequenceType.CODON) {
+            return sequenceType.toStateArray(getString());
+        } else {
+            return sequenceType.toStateArray(getStateIndices());
+        }
     }
 
     public byte[] getStateIndices() {
