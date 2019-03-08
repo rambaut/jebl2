@@ -11,10 +11,7 @@ package jebl.evolution.sequences;
 import jebl.evolution.taxa.Taxon;
 import jebl.util.Attributable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A biomolecular sequence.
@@ -69,7 +66,7 @@ public interface Sequence extends Attributable, Comparable {
 	 * @param sequence2
 	 * @return
 	 */
-	public static Sequence appendSequences(Sequence sequence1, Sequence sequence2) {
+	static Sequence appendSequences(Sequence sequence1, Sequence sequence2) {
 		if (sequence1.getSequenceType() != sequence2.getSequenceType()) {
 			throw new IllegalArgumentException("sequences to be appended not of the same type");
 		}
@@ -86,7 +83,7 @@ public interface Sequence extends Attributable, Comparable {
 	 * @param to
 	 * @return
 	 */
-	public static Sequence getSubSequence(Sequence sequence, int from, int to) {
+	static Sequence getSubSequence(Sequence sequence, int from, int to) {
 		if (from > to) {
 			throw new IllegalArgumentException("subsequence from is greater than to");
 		}
@@ -98,7 +95,7 @@ public interface Sequence extends Attributable, Comparable {
 		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), states);
 	}
 
-	public static Sequence trimSequence(Sequence sequence, State[] trimStates) {
+	static Sequence trimSequence(Sequence sequence, State[] trimStates) {
 		Set<State> trimSet = new HashSet<>(Arrays.asList(trimStates));
 		State[] sourceStates = sequence.getStates();
 		int i = 0;
@@ -119,12 +116,44 @@ public interface Sequence extends Attributable, Comparable {
 	}
 
 	/**
+	 * Strips a sequence of gaps
+	 * @param sequence the sequence
+	 * @return the stripped sequence
+	 */
+	static Sequence stripGaps(final Sequence sequence) {
+		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), jebl.evolution.sequences.Utils.stripGaps(sequence.getStates()));
+	}
+
+
+	/**
+	 * Strips a sequence of any states given
+	 * @param sequence the sequence
+	 * @param stripStates the states to strip
+	 * @return an array of states
+	 */
+	static Sequence stripStates(final Sequence sequence, final List<State> stripStates) {
+		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), jebl.evolution.sequences.Utils.stripStates(sequence.getStates(), stripStates));
+	}
+
+	/**
+	 * Searchers and replaces a sequence of any states given
+	 * @param sequence the sequence
+	 * @param searchStates the states to search for
+	 * @return an array of states
+	 */
+	static Sequence replaceStates(final Sequence sequence, final List<State> searchStates, State replaceState) {
+		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(),
+				jebl.evolution.sequences.Utils.replaceStates(sequence.getStates(), searchStates, replaceState));
+	}
+
+
+	/**
 	 * Counts the number of occurances of a state
 	 * @param sequence the sequence string to count
 	 * @param state the state
 	 * @return the number of occurances
 	 */
-	public static int getStateCount(final Sequence sequence, final State state) {
+	static int getStateCount(final Sequence sequence, final State state) {
 
 		int count = 0;
 		for (State s : sequence.getStates()) {

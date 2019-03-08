@@ -249,6 +249,25 @@ public class Utils {
         return stripped.toArray(new State[0]);
     }
 
+    /**
+     * Searchers and replaces a sequence of any states given
+     * @param sequence the sequence
+     * @param searchStates the states to search for
+     * @return an array of states
+     */
+    public static State[] replaceStates(final State[] sequence, final List<State> searchStates, State replaceState) {
+        List<State> stripped = new ArrayList<State>();
+        for (State state : sequence) {
+            if (searchStates.contains(state)) {
+                stripped.add(replaceState);
+            } else {
+                stripped.add(state);
+            }
+        }
+
+        return stripped.toArray(new State[0]);
+    }
+
     public static State[] reverse(final State[] sequence) {
         State[] reversed = new State[sequence.length];
         for (int i = 0; i < sequence.length; i++) {
