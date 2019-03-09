@@ -95,18 +95,17 @@ public interface Sequence extends Attributable, Comparable {
 		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), states);
 	}
 
-	static Sequence trimSequence(Sequence sequence, State[] trimStates) {
-		Set<State> trimSet = new HashSet<>(Arrays.asList(trimStates));
+	static Sequence trimSequence(Sequence sequence, List<State> trimStates) {
 		State[] sourceStates = sequence.getStates();
 		int i = 0;
-		while (i < sourceStates.length && trimSet.contains(sourceStates[i])) {
+		while (i < sourceStates.length && trimStates.contains(sourceStates[i])) {
 			i++;
 		}
 		if (i < sourceStates.length) {
 			Sequence sequence1 = getSubSequence(sequence, i, sourceStates.length - 1);
 			sourceStates = sequence1.getStates();
 			i = sourceStates.length - 1;
-			while (i > 0 && trimSet.contains(sourceStates[i])) {
+			while (i > 0 && trimStates.contains(sourceStates[i])) {
 				i--;
 			}
 			return getSubSequence(sequence1, 0, i);
@@ -132,7 +131,8 @@ public interface Sequence extends Attributable, Comparable {
 	 * @return an array of states
 	 */
 	static Sequence stripStates(final Sequence sequence, final List<State> stripStates) {
-		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(), jebl.evolution.sequences.Utils.stripStates(sequence.getStates(), stripStates));
+		return new BasicSequence(sequence.getSequenceType(), sequence.getTaxon(),
+				jebl.evolution.sequences.Utils.stripStates(sequence.getStates(), stripStates));
 	}
 
 	/**
