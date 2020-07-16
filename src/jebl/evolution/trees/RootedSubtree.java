@@ -52,21 +52,24 @@ final public class RootedSubtree implements RootedTree {
                     children.add(newChild);
                 }
             }
-            if (children.size() >= 2) {
+            if (children.size() > 1) {
                 newNode = createInternalNode(children);
 
-                for( Map.Entry<String, Object> e : node.getAttributeMap().entrySet() ) {
-                    newNode.setAttribute(e.getKey(), e.getValue());
-                }
-
-                setHeight(newNode, tree.getHeight(node));
             } else if (children.size() == 1) {
 
-                newNode = children.get(0);
+                // just return the single child
+                return children.get(0);
             } else {
 
                 newNode = null;
             }
+        }
+
+        if (newNode != null) {
+            for( Map.Entry<String, Object> e : node.getAttributeMap().entrySet() ) {
+                newNode.setAttribute(e.getKey(), e.getValue());
+            }
+            setHeight(newNode, tree.getHeight(node));
         }
 
         return newNode;
