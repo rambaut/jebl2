@@ -19,12 +19,14 @@ public interface TreeExporter {
      * @param tree
      * @throws IOException
      */
-    void exportTree(Tree tree) throws IOException;
+    void exportTree(Tree tree);
 
     /**
      * Export a collection of trees
      * @param trees
      * @throws IOException
      */
-    void exportTrees(Collection<? extends Tree> trees) throws IOException;
+    void exportTrees(Collection<? extends Tree> trees);
+
+    void close();
 }

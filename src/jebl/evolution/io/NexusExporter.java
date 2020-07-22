@@ -30,16 +30,16 @@ import java.util.List;
 
 public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeExporter {
 
-	public NexusExporter(Writer writer) {
-		this(writer, true);
-	}
+    public NexusExporter(Writer writer) {
+        this(writer, true);
+    }
 
-	/**
+    /**
      *
      * @param writer where export text goes
      */
     public NexusExporter(Writer writer, boolean writeMetaComments) {
-		this(writer, writeMetaComments, false);
+        this(writer, writeMetaComments, false);
     }
 
     /**
@@ -47,7 +47,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
      * @param writer where export text goes
      */
     public NexusExporter(Writer writer, boolean writeMetaComments, boolean interleave) {
-		this.writeMetaComments = writeMetaComments;
+        this.writeMetaComments = writeMetaComments;
         this.interleave = interleave;
         this.writer = new PrintWriter(writer);
         this.writer.println("#NEXUS");
@@ -56,14 +56,18 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     /**
      * exportAlignment.
      */
-    public void exportAlignment(Alignment alignment) throws IOException {
-    	exportSequences(alignment.getSequences());
+    public void exportAlignment(Alignment alignment) {
+        exportSequences(alignment.getSequences());
     }
 
     /**
      * export alignment.
      */
-    public void exportSequences(Collection<? extends Sequence> sequences) throws IOException, IllegalArgumentException {
+    public void exportSequences(Collection<? extends Sequence> sequences) throws IllegalArgumentException {
+
+        if (treesBlockOpen) {
+            endWriteTrees();
+        }
 
         establishSequenceTaxa(sequences);
 
@@ -77,7 +81,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
             if (seqType == null) {
                 seqType = sequence.getSequenceType();
             } else if( seqType != sequence.getSequenceType() ) {
-               throw new IllegalArgumentException("All seqeuences must have the same type");
+                throw new IllegalArgumentException("All seqeuences must have the same type");
             }
         }
 
@@ -113,58 +117,25 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
         }
     }
 
+    private boolean treesBlockOpen = false;
+
     /**
      * Export a single tree
      *
      * @param tree
      * @throws java.io.IOException
      */
-    public void exportTree(Tree tree) throws IOException {
+    public void exportTree(Tree tree) {
         List<Tree> trees = new ArrayList<Tree>();
         trees.add(tree);
         exportTrees(trees);
     }
 
-    private void writeTrees(Collection<? extends Tree> trees, boolean checkTaxa) throws IOException {
-        int nt = 0;
-        for( Tree t : trees ) {
-            if( checkTaxa && !establishTreeTaxa(t) ) {
-                throw new IllegalArgumentException();
-            }
-            final boolean isRooted = t instanceof RootedTree;
-            final RootedTree rtree = isRooted ? (RootedTree)t : Utils.rootTheTree(t);
-
-            final Object name = t.getAttribute(treeNameAttributeKey);
-
-            ++nt;
-            final String treeName = (name != null) ? NexusImporter.makeIntoAllowableIdentifier(name.toString()) : "tree_" + nt;
-
-            StringBuilder builder = new StringBuilder("\ttree ");
-
-            builder.append(treeName);
-            builder.append(" = ");
-
-            // TREE & UTREE are depreciated in the NEXUS format in favour of a metacomment
-            // [&U] or [&R] after the TREE command. Andrew.
-            // TT: The [&U], [&R] should actually come *after* the " = " and be uppercase, see
-            // e.g. tree_rest in http://www.cs.nmsu.edu/~epontell/nexus/nexus_grammar .
-            // Before 2008-05-05 we incorrectly inserted it before the treeName.
-            builder.append(isRooted && !rtree.conceptuallyUnrooted() ? "[&R] " : "[&U] ");
-
-            appendAttributes(rtree, exportExcludeKeys, builder);
-
-            appendTree(rtree, rtree.getRootNode(), builder);
-            builder.append(";");
-
-            writer.println(builder);
-        }
-    }
-
-    public void exportTrees(Collection<? extends Tree> trees) throws IOException {
+    public void exportTrees(Collection<? extends Tree> trees) {
         exportTrees(trees, false);
     }
 
-    public void exportTrees(Collection<? extends Tree> trees, boolean writeTaxa) throws IOException {
+    public void exportTrees(Collection<? extends Tree> trees, boolean writeTaxa) {
         if (writeTaxa) {
             TreeSet<Taxon> taxa = new TreeSet<Taxon>();
             for (Tree tree : trees) {
@@ -174,26 +145,88 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
             establishTaxa(taxa);
         }
 
-        writer.println("begin trees;");
+        if (!treesBlockOpen) {
+            startWriteTrees(null);
+        }
         writeTrees(trees, false);
+    }
+
+    public void exportTreesWithTranslation(Collection<? extends Tree> trees, Map<String, String> translationMap) throws IOException {
+        if (!treesBlockOpen) {
+            startWriteTrees(translationMap);
+        }
+        writeTrees(trees, false);
+    }
+
+    public void close() {
+        if (treesBlockOpen) {
+            endWriteTrees();
+        }
+        writer.close();
+    }
+
+    private void startWriteTrees(Map<String, String> translationMap) {
+        writer.println("begin trees;");
+        if (translationMap != null) {
+            writer.println("\ttranslate");
+            boolean first = true;
+            for (Map.Entry<String, String> e : translationMap.entrySet()) {
+                writer.print((first ? "" : ",\n") + "\t\t" + safeName(e.getKey()) + " " + safeName(e.getValue()));
+                first = false;
+            }
+            writer.println("\n\t;");
+        }
+        treesBlockOpen = true;
+    }
+
+    private void endWriteTrees() {
         writer.println("end;");
     }
 
-    public void exportTreesWithTranslation(Collection<? extends Tree> trees, Map<String, String> t) throws IOException {
-        writer.println("begin trees;");
-        writer.println("\ttranslate");
-        boolean first = true;
-        for( Map.Entry<String, String> e : t.entrySet() ) {
-            writer.print((first ? "" : ",\n") + "\t\t" + safeName(e.getKey()) + " " + safeName(e.getValue()));
-            first = false;
+    private void writeTrees(Collection<? extends Tree> trees, boolean checkTaxa) {
+        for (Tree tree : trees) {
+            writeTree(tree, checkTaxa);
         }
-        writer.println("\n\t;");
+    }
 
-        writeTrees(trees, false);
-        writer.println("end;");
+    private void writeTree(Tree tree, boolean checkTaxa) {
+        int nt = 0;
+        if( checkTaxa && !establishTreeTaxa(tree) ) {
+            throw new IllegalArgumentException();
+        }
+        final boolean isRooted = tree instanceof RootedTree;
+        final RootedTree rtree = isRooted ? (RootedTree)tree : Utils.rootTheTree(tree);
+
+        final Object name = tree.getAttribute(treeNameAttributeKey);
+
+        ++nt;
+        final String treeName = (name != null) ? NexusImporter.makeIntoAllowableIdentifier(name.toString()) : "tree_" + nt;
+
+        StringBuilder builder = new StringBuilder("\ttree ");
+
+        builder.append(treeName);
+        builder.append(" = ");
+
+        // TREE & UTREE are depreciated in the NEXUS format in favour of a metacomment
+        // [&U] or [&R] after the TREE command. Andrew.
+        // TT: The [&U], [&R] should actually come *after* the " = " and be uppercase, see
+        // e.g. tree_rest in http://www.cs.nmsu.edu/~epontell/nexus/nexus_grammar .
+        // Before 2008-05-05 we incorrectly inserted it before the treeName.
+        builder.append(isRooted && !rtree.conceptuallyUnrooted() ? "[&R] " : "[&U] ");
+
+        appendAttributes(rtree, exportExcludeKeys, builder);
+
+        appendTree(rtree, rtree.getRootNode(), builder);
+        builder.append(";");
+
+        writer.println(builder);
     }
 
     public void exportMatrix(final DistanceMatrix distanceMatrix) {
+        if (treesBlockOpen) {
+            endWriteTrees();
+        }
+
         final List<Taxon> taxa = distanceMatrix.getTaxa();
         establishTaxa(taxa);
         writer.println("begin distances;");
@@ -365,9 +398,9 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     }
 
     private StringBuilder appendAttributes(Attributable item, String[] excludeKeys, StringBuilder builder) {
-	    if (!writeMetaComments) {
-		    return builder;
-	    }
+        if (!writeMetaComments) {
+            return builder;
+        }
 
         boolean first = true;
         for( String key : item.getAttributeNames() ) {
@@ -445,7 +478,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
 
     private Set<Taxon> taxa = null;
     protected final PrintWriter writer;
-	private boolean writeMetaComments;
+    private boolean writeMetaComments;
     private boolean interleave;
     public static final int MAX_ROW_LENGTH = 60;
 }

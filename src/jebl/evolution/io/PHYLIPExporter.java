@@ -104,15 +104,20 @@ public class PHYLIPExporter implements AlignmentExporter, TreeExporter {
 
     // Should call those only after the alignment
 
-    public void exportTree(Tree tree) throws IOException {
+    public void exportTree(Tree tree) {
         final RootedTree rtree = Utils.rootTheTree(tree);
         writer.print(Utils.toNewick(rtree));
         writer.println(";");
     }
 
-    public void exportTrees(Collection<? extends Tree> trees) throws IOException {
+    public void exportTrees(Collection<? extends Tree> trees) {
        for( Tree t : trees ) {
            exportTree(t);
        }
+    }
+
+    @Override
+    public void close() {
+        writer.close();
     }
 }

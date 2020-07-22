@@ -4,6 +4,7 @@ import jebl.evolution.trees.Tree;
 import jebl.evolution.trees.Utils;
 import jebl.evolution.trees.RootedTree;
 
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.io.IOException;
 import java.io.BufferedWriter;
@@ -16,7 +17,7 @@ import java.util.Collection;
  */
 public class NewickExporter implements TreeExporter {
     public NewickExporter(Writer writer) {
-        this.writer = writer;
+        this.writer = new PrintWriter(writer);
     }
 
     /**
@@ -25,7 +26,7 @@ public class NewickExporter implements TreeExporter {
      * @param tree
      * @throws java.io.IOException
      */
-    public void exportTree(Tree tree) throws IOException {
+    public void exportTree(Tree tree) {
         writeTree(tree);
     }
 
@@ -35,15 +36,20 @@ public class NewickExporter implements TreeExporter {
      * @param trees
      * @throws java.io.IOException
      */
-    public void exportTrees(Collection<? extends Tree> trees) throws IOException {
+    public void exportTrees(Collection<? extends Tree> trees) {
         for (Tree tree : trees) {
             writeTree(tree);
         }
     }
 
-    private void writeTree(Tree tree) throws IOException {
-        writer.write(Utils.toNewick(Utils.rootTheTree(tree)));
+    @Override
+    public void close() {
+        writer.close();
     }
 
-    private final Writer writer;
+    private void writeTree(Tree tree) {
+        writer.println(Utils.toNewick(Utils.rootTheTree(tree)));
+    }
+
+    private final PrintWriter writer;
 }
