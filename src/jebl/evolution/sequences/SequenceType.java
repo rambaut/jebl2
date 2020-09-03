@@ -341,6 +341,90 @@ public interface SequenceType {
         }
     };
 
+    public static final SequenceType BINARY = new SequenceType() {
+
+        @Override
+        public int getStateCount() {
+            return Binary.getStateCount();
+        }
+
+        @Override
+        public List<? extends State> getStates() {
+            return Binary.getStates();
+        }
+
+        @Override
+        public int getCanonicalStateCount() {
+            return Binary.getCanonicalStateCount();
+        }
+
+        @Override
+        public List<? extends State> getCanonicalStates() {
+            return Binary.getCanonicalStates();
+        }
+
+        @Override
+        public State getState(String code) {
+            return Binary.getState(code);
+        }
+
+        @Override
+        public State getState(char code) {
+            return Binary.getState(code);
+        }
+
+        @Override
+        public int getCodeLength() {
+            return 1;
+        }
+
+        @Override
+        public State getState(int index) {
+            return Binary.getState(index);
+        }
+
+        @Override
+        public State getUnknownState() {
+            return Binary.getUnknownState();
+        }
+
+        @Override
+        public State getGapState() {
+            return Binary.getGapState();
+        }
+
+        @Override
+        public boolean isUnknown(State state) {
+            return Binary.isUnknown(state);
+        }
+
+        @Override
+        public boolean isGap(State state) {
+            return Binary.isGap(state);
+        }
+
+        @Override
+        public String getName() {
+            return Binary.NAME;
+        }
+
+        @Override
+        public String getNexusDataType() {
+            return Binary.NAME;
+        }
+
+        @Override
+        public State[] toStateArray(String sequenceString) {
+            return Binary.toStateArray(sequenceString);
+        }
+
+        @Override
+        public State[] toStateArray(byte[] indexArray) {
+            return Binary.toStateArray(indexArray);
+        }
+    };
+
+
     public class Utils {
         private Utils() { }  // make class uninstantiable
 
@@ -351,6 +435,30 @@ public interface SequenceType {
                 buffer.append(state.getCode());
             }
             return buffer.toString();
+        }
+
+        /**
+         * @param dataTypeName  keywords in Nexus or data type descriptions
+         */
+        public static SequenceType getDataType(String dataTypeName) {
+            // remove spaces, all lower case
+            switch (dataTypeName.trim().toLowerCase()) {
+                // keywords in Nexus DATATYPE
+                case "rna":
+                case "dna":
+                case "nucleotide":
+                    return NUCLEOTIDE;
+                case "aminoacid":
+                case "protein":
+                    return AMINO_ACID;
+                case "binary":
+                    return BINARY;
+//                case "standard":
+//                case "continuous":
+//                    return STANDARD; // TODO parse continuous DATATYPE in NexusImporter
+                default:
+                    throw new UnsupportedOperationException(dataTypeName);
+            }
         }
     }
 }
