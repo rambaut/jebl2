@@ -479,7 +479,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
     /**
      * Finds the end of the current block.
      */
-    private void findToken(String query, boolean ignoreCase) throws IOException
+    protected void findToken(String query, boolean ignoreCase) throws IOException
     {
         String token;
         boolean found = false;
@@ -624,21 +624,9 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
                         }
 
                         String token3 = helper.readToken(";");
-                        if (token3.equalsIgnoreCase("NUCLEOTIDE") ||
-                                token3.equalsIgnoreCase("DNA") ||
-                                token3.equalsIgnoreCase("RNA")) {
+                        // replace getSequenceType if there is new data type
+                        sequenceType = getSequenceType(token3);
 
-                            sequenceType = SequenceType.NUCLEOTIDE;
-
-                        } else if (token3.equalsIgnoreCase("PROTEIN")) {
-
-                            sequenceType = SequenceType.AMINO_ACID;
-
-                        } else if (token3.equalsIgnoreCase("CONTINUOUS")) {
-
-                            throw new ImportException.UnparsableDataException("Continuous data cannot be parsed at present");
-
-                        }
                     } else if (token2.equalsIgnoreCase("INTERLEAVE")) {
                         isInterleaved = true;
                     }
@@ -655,6 +643,33 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         if ( block != NexusBlock.TAXA && sequenceType == null ) {
             throw new ImportException.MissingFieldException("DATATYPE. Only Nucleotide or Protein sequences are supported.");
         }
+    }
+
+    /**
+     * Extract data type after "DATATYPE" keyword, and convert into {@link SequenceType}.
+     * Override this method if there is new data type.
+     * @param token  the token returned from {@link ImportHelper#readToken(String)}.
+     * @return the corresponding {@link SequenceType}.
+     * @throws ImportException.UnparsableDataException
+     */
+    protected SequenceType getSequenceType(String token) throws ImportException.UnparsableDataException {
+        SequenceType sequenceType = null;
+        if (token.equalsIgnoreCase("NUCLEOTIDE") ||
+                token.equalsIgnoreCase("DNA") ||
+                token.equalsIgnoreCase("RNA")) {
+
+            sequenceType = SequenceType.NUCLEOTIDE;
+
+        } else if (token.equalsIgnoreCase("PROTEIN")) {
+
+            sequenceType = SequenceType.AMINO_ACID;
+
+        } else if (token.equalsIgnoreCase("CONTINUOUS")) {
+
+            throw new ImportException.UnparsableDataException("Continuous data cannot be parsed at present");
+
+        }
+        return sequenceType;
     }
 
     /**
@@ -1467,13 +1482,13 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
 
     // private stuff
     private NexusBlock nextBlock = null;
-    private String nextBlockName = null;
+    protected String nextBlockName = null;
 
-    private int taxonCount = 0, siteCount = 0;
-    private SequenceType sequenceType = null;
-    private String gapCharacters = "-";
-    private String matchCharacters = ".";
-    private String missingCharacters = "?";
+    protected int taxonCount = 0, siteCount = 0;
+    protected SequenceType sequenceType = null;
+    protected String gapCharacters = "-";
+    protected String matchCharacters = ".";
+    protected String missingCharacters = "?";
     private boolean isInterleaved = false;
 
     protected final ImportHelper helper;
