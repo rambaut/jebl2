@@ -1489,7 +1489,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
     protected String gapCharacters = "-";
     protected String matchCharacters = ".";
     protected String missingCharacters = "?";
-    private boolean isInterleaved = false;
+    protected boolean isInterleaved = false;
 
     protected final ImportHelper helper;
 }
