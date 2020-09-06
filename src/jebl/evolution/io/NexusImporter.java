@@ -60,6 +60,8 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         TAXA,
         CHARACTERS,
         DATA,
+        ASSUMPTIONS, // TODO
+        CALIBRATION, // TODO
         UNALIGNED,
         DISTANCES,
         TREES
