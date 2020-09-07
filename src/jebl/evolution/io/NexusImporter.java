@@ -869,7 +869,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
      * @param importHelper ImportHelper which may have read meta comments.
      * @throws ImportException.BadFormatException
      */
-    static void parseAndClearMetaComments(Attributable item, ImportHelper importHelper) throws ImportException.BadFormatException {
+    public static void parseAndClearMetaComments(Attributable item, ImportHelper importHelper) throws ImportException.BadFormatException {
         for (String meta : importHelper.getMetaComments()) {
             // A meta-comment which should be in the form:
             // \[&label[=value][,label[=value]>[,/..]]\]
@@ -1371,7 +1371,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         }
     }
 
-    static void parseMetaCommentPairs(String meta, Attributable item) throws ImportException.BadFormatException {
+    public static void parseMetaCommentPairs(String meta, Attributable item) throws ImportException.BadFormatException {
         // This regex should match key=value pairs, separated by commas
         // This can match the following types of meta comment pairs:
         // value=number, value="string", value={item1, item2, item3}
@@ -1410,7 +1410,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
      * @param value the string
      * @return the object
      */
-    static Object parseValue(String value) {
+    public static Object parseValue(String value) {
 
         value = value.trim();
 
