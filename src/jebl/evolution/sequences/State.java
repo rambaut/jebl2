@@ -68,7 +68,7 @@ public abstract class State implements Comparable {
     }
 
     /**
-     * @param other another state to check for the quality with.
+     * @param other another state to check for the equality with.
      * @return true if the other state is or possibly is equal to this state, taking ambiguities into account,
      *         i.e. if the ambiguity sets of this and the other state intersect.
      */
@@ -99,7 +99,7 @@ public abstract class State implements Comparable {
     /**
      * Determine how much in common these potentially ambigous states have as a fraction between 0 and 1
      * 2 non-ambiguous states will return 0.
-     * 2 identical non-ambigoues states will 1.
+     * 2 identical non-ambiguous states will return 1.
      * e.g. for Nucleotides
      * R,A = 0.5
      * R,G = 0.5

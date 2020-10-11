@@ -16,12 +16,14 @@ package jebl.evolution.sequences;
  */
 public final class NucleotideState extends State {
 
-    NucleotideState(String name, String stateCode, int index) {
+    NucleotideState(String name, String stateCode, int index, byte bitCode) {
         super(name, stateCode, index);
+        this.bitCode = bitCode;
     }
 
-    NucleotideState(String name, String stateCode, int index, NucleotideState[] ambiguities) {
+    NucleotideState(String name, String stateCode, int index, byte bitCode, NucleotideState[] ambiguities) {
         super(name, stateCode, index, ambiguities);
+        this.bitCode = bitCode;
     }
 
     @Override
@@ -31,10 +33,16 @@ public final class NucleotideState extends State {
         return super.compareTo(that);
     }
 
+    @Override
+    public boolean possiblyEqual(State other) {
+        return (bitCode & ((NucleotideState)other).bitCode) > 0;
+    }
+
     public boolean isGap() {
 		return this == Nucleotides.GAP_STATE;
 	}
 
     public SequenceType getType() { return SequenceType.NUCLEOTIDE; }
-
+    
+    public final byte bitCode;
 }

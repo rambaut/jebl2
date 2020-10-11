@@ -28,30 +28,40 @@ public final class Nucleotides {
     public static final int CANONICAL_STATE_COUNT = 4;
     public static final int STATE_COUNT = 17;
 
-    public static final NucleotideState A_STATE = new NucleotideState("Adenine", "A", 0);
-    public static final NucleotideState C_STATE = new NucleotideState("Cytosine", "C", 1);
-    public static final NucleotideState G_STATE = new NucleotideState("Guanine", "G", 2);
-    public static final NucleotideState T_STATE = new NucleotideState("Thymine", "T", 3);
+    public static final NucleotideState A_STATE = new NucleotideState("Adenine", "A", 0, (byte)0b0001);
+    public static final NucleotideState C_STATE = new NucleotideState("Cytosine", "C",1, (byte)0b0010);
+    public static final NucleotideState G_STATE = new NucleotideState("Guanine", "G", 2, (byte)0b0100);
+    public static final NucleotideState T_STATE = new NucleotideState("Thymine", "T", 3, (byte)0b1000);
 
-    // The following line has been removed since it's never used and if it
-    // was used would cause all sorts of bugs with various analysis code.
-    // T_STATE  represents either a U or a T depending on the context.
-    //public static final NucleotideState U_STATE = new NucleotideState("U", "U", 3);
+    // A: 0b0001 1
+    // C: 0b0010 2
+    // G: 0b0100 4
+    // T: 0b1000 8
+    // R: (byte)0b0101 5
+    // Y: (byte)0b1010 10
+    // M: (byte)0b0011 3
+    // W: (byte)0b1001 9
+    // S: (byte)0b0110 6
+    // K: (byte)0b1100 12
+    // B: (byte)0b1110 14
+    // D: (byte)0b1101 13
+    // H: (byte)0b1011 11
+    // V: (byte)0b0111 7
 
-    public static final NucleotideState R_STATE = new NucleotideState("A/G", "R", 4, new NucleotideState[] {A_STATE, G_STATE});
-    public static final NucleotideState Y_STATE = new NucleotideState("C/T", "Y", 5, new NucleotideState[] {C_STATE, T_STATE});
-    public static final NucleotideState M_STATE = new NucleotideState("A/C", "M", 6, new NucleotideState[] {A_STATE, C_STATE});
-    public static final NucleotideState W_STATE = new NucleotideState("A/T", "W", 7, new NucleotideState[] {A_STATE, T_STATE});
-    public static final NucleotideState S_STATE = new NucleotideState("C/G", "S", 8, new NucleotideState[] {C_STATE, G_STATE});
-    public static final NucleotideState K_STATE = new NucleotideState("G/T", "K", 9, new NucleotideState[] {G_STATE, T_STATE});
-    public static final NucleotideState B_STATE = new NucleotideState("C/G/T", "B", 10, new NucleotideState[] {C_STATE, G_STATE, T_STATE});
-    public static final NucleotideState D_STATE = new NucleotideState("A/G/T", "D", 11, new NucleotideState[] {A_STATE, G_STATE, T_STATE});
-    public static final NucleotideState H_STATE = new NucleotideState("A/C/T", "H", 12, new NucleotideState[] {A_STATE, C_STATE, T_STATE});
-    public static final NucleotideState V_STATE = new NucleotideState("A/C/G", "V", 13, new NucleotideState[] {A_STATE, C_STATE, G_STATE});
-    public static final NucleotideState N_STATE = new NucleotideState("Unknown base", "N", 14, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
+    public static final NucleotideState R_STATE = new NucleotideState("A/G", "R", 4, (byte)0b0101, new NucleotideState[] {A_STATE, G_STATE});
+    public static final NucleotideState Y_STATE = new NucleotideState("C/T", "Y", 5, (byte)0b1010, new NucleotideState[] {C_STATE, T_STATE});
+    public static final NucleotideState M_STATE = new NucleotideState("A/C", "M", 6, (byte)0b0011, new NucleotideState[] {A_STATE, C_STATE});
+    public static final NucleotideState W_STATE = new NucleotideState("A/T", "W", 7, (byte)0b1001, new NucleotideState[] {A_STATE, T_STATE});
+    public static final NucleotideState S_STATE = new NucleotideState("C/G", "S", 8, (byte)0b0110, new NucleotideState[] {C_STATE, G_STATE});
+    public static final NucleotideState K_STATE = new NucleotideState("G/T", "K", 9, (byte)0b1100, new NucleotideState[] {G_STATE, T_STATE});
+    public static final NucleotideState B_STATE = new NucleotideState("C/G/T", "B", 10, (byte)0b1110, new NucleotideState[] {C_STATE, G_STATE, T_STATE});
+    public static final NucleotideState D_STATE = new NucleotideState("A/G/T", "D", 11, (byte)0b1101, new NucleotideState[] {A_STATE, G_STATE, T_STATE});
+    public static final NucleotideState H_STATE = new NucleotideState("A/C/T", "H", 12, (byte)0b1011, new NucleotideState[] {A_STATE, C_STATE, T_STATE});
+    public static final NucleotideState V_STATE = new NucleotideState("A/C/G", "V", 13, (byte)0b0111, new NucleotideState[] {A_STATE, C_STATE, G_STATE});
+    public static final NucleotideState N_STATE = new NucleotideState("Unknown base", "N", 14, (byte)0b1111, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
 
-    public static final NucleotideState UNKNOWN_STATE = new NucleotideState("Unknown base", "?", 15, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
-    public static final NucleotideState GAP_STATE = new NucleotideState("Gap", "-", 16, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
+    public static final NucleotideState UNKNOWN_STATE = new NucleotideState("Unknown base", "?", 15, (byte)0b1111, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
+    public static final NucleotideState GAP_STATE = new NucleotideState("Gap", "-", 16, (byte)0b1111, new NucleotideState[] {A_STATE, C_STATE, G_STATE, T_STATE});
 
     // Making an array public allows a client to modify its contents. Deprecating on 2007-10-10
     // and will become private in the future. Use {@link #getCanonicalStates} instead.
