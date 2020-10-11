@@ -43,6 +43,7 @@ public final class NucleotideState extends State {
 	}
 
     public SequenceType getType() { return SequenceType.NUCLEOTIDE; }
-    
+
+    // a set of bits representing nucleotide states 0b0001 = A, 0b0010 = C, etc
     public final byte bitCode;
 }
