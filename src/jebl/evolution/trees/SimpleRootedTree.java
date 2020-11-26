@@ -68,6 +68,10 @@ final public class SimpleRootedTree implements RootedTree {
      * @return created node
      */
     public Node createNodes(RootedTree tree, Node node) {
+        hasHeights = tree.hasHeights();
+        heightsKnown = tree.isHeightsKnown();
+        hasLengths = tree.hasLengths();
+        lengthsKnown = tree.isLengthsKnown();
         return createNodes(tree, node, (Map<Node, Node>)null);
     }
 
@@ -100,8 +104,12 @@ final public class SimpleRootedTree implements RootedTree {
             newNode.setAttribute(e.getKey(), e.getValue());
         }
         // }
-        setHeight(newNode, tree.getHeight(node));
-
+        if (tree.hasHeights() && tree.isHeightsKnown()) {
+            setHeight(newNode, tree.getHeight(node));
+        }
+        if (tree.hasLengths() && tree.isLengthsKnown()) {
+            setLength(newNode, tree.getLength(node));
+        }
         return newNode;
     }
 
@@ -312,6 +320,13 @@ final public class SimpleRootedTree implements RootedTree {
     }
 
     /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    public boolean isHeightsKnown() {
+        return heightsKnown;
+    }
+
+    /**
      * @param node the node whose height is being requested.
      * @return the height of the given node. The height will be
      *         less than the parent's height and greater than it children's heights.
@@ -327,6 +342,13 @@ final public class SimpleRootedTree implements RootedTree {
      */
     public boolean hasLengths() {
         return hasLengths;
+    }
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    public boolean isLengthsKnown() {
+        return lengthsKnown;
     }
 
     /**

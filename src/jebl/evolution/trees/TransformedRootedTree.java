@@ -71,6 +71,20 @@ public class TransformedRootedTree extends FilteredRootedTree {
         }
     }
 
+    /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    public boolean isHeightsKnown() {
+        return true;
+    }
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    public boolean isLengthsKnown() {
+        return true;
+    }
+
     private int getCladeSize(Node node) {
         if (isExternal(node)) {
             return 1;

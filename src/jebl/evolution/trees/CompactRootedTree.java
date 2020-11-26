@@ -321,6 +321,20 @@ public class CompactRootedTree extends AttributableImp implements RootedTree {
         return heights[index];
     }
 
+    /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    public boolean isHeightsKnown() {
+           return true;
+    }
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    public boolean isLengthsKnown() {
+        return true;
+    }
+
     public Node getParent(Node node) {
         final int index = ((SimpleRootedNode) node).index;
         return index == 0 ? null : nodes[parent[index]];

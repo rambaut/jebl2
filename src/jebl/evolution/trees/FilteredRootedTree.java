@@ -47,6 +47,14 @@ public abstract class FilteredRootedTree implements RootedTree {
         return source.getLength(node);
     }
 
+    public boolean isHeightsKnown() {
+        return source.isHeightsKnown();
+    }
+
+    public boolean isLengthsKnown() {
+        return source.isLengthsKnown();
+    }
+
     public Node getParent(Node node) {
         return source.getParent(node);
     }

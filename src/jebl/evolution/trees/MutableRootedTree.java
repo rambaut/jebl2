@@ -350,6 +350,20 @@ public class MutableRootedTree implements RootedTree {
     }
 
     /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    public boolean isHeightsKnown() {
+        return heightsKnown;
+    }
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    public boolean isLengthsKnown() {
+        return lengthsKnown;
+    }
+
+    /**
      * @param node the node whose branch length (to its parent) is being requested.
      * @return the length of the branch to the parent node (0.0 if the node is the root).
      */

@@ -157,6 +157,20 @@ public class RootedFromUnrooted implements RootedTree {
 		return l;
 	}
 
+	/**
+	 * @return Whether the node heights are known or need to be recalculated from the lengths
+	 */
+	public boolean isHeightsKnown() {
+		return false;
+	}
+
+	/**
+	 * @return Whether the branch lengths are known or need to be recalculated from the heights
+	 */
+	public boolean isLengthsKnown() {
+		return true;
+	}
+
 	public Node getParent(Node node) {
 		return parents.get(node);
 	}

@@ -200,6 +200,20 @@ final public class RootedSubtree implements RootedTree {
     }
 
     /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    public boolean isHeightsKnown() {
+        return heightsKnown;
+    }
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    public boolean isLengthsKnown() {
+        return lengthsKnown;
+    }
+
+    /**
      * @param node the node whose parent is requested
      * @return the parent node of the given node, or null
      *         if the node is the root node.

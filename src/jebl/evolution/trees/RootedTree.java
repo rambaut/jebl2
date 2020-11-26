@@ -39,6 +39,11 @@ public interface RootedTree extends Tree {
     boolean hasHeights();
 
     /**
+     * @return Whether the node heights are known or need to be recalculated from the lengths
+     */
+    boolean isHeightsKnown();
+
+    /**
      * @param node the node whose height is being requested.
      * @return the height of the given node. The height will be
      * less than the parent's height and greater than it children's heights.
@@ -49,6 +54,11 @@ public interface RootedTree extends Tree {
      * @return Whether this tree has branch lengths available
      */
     boolean hasLengths();
+
+    /**
+     * @return Whether the branch lengths are known or need to be recalculated from the heights
+     */
+    boolean isLengthsKnown();
 
     /**
      * @param node the node whose branch length (to its parent) is being requested.
