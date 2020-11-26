@@ -30,6 +30,8 @@ import java.util.List;
 
 public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeExporter {
 
+    private static final String BRANCH_LENGTH_FORMAT = "%.6g";
+
     public NexusExporter(Writer writer) {
         this(writer, true);
     }
@@ -365,8 +367,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
             appendAttributes(node, null, builder);
 
             if( tree.hasLengths() ) {
-                builder.append(':');
-                builder.append(roundDouble(tree.getLength(node), 6));
+                builder.append(":").append(String.format(BRANCH_LENGTH_FORMAT, tree.getLength(node)));
             }
         } else {
             builder.append('(');
@@ -384,17 +385,10 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
             // whet it is present.
             if (parent != null) {
                 if (tree.hasLengths()) {
-                    builder.append(":").append(roundDouble(tree.getLength(node), 6));
+                    builder.append(":").append(String.format(BRANCH_LENGTH_FORMAT, tree.getLength(node)));
                 }
             }
         }
-    }
-
-    public static double roundDouble(double value, int decimalPlace) {
-        double power_of_ten = 1;
-        while (decimalPlace-- > 0)
-            power_of_ten *= 10.0;
-        return Math.round(value * power_of_ten) / power_of_ten;
     }
 
     private StringBuilder appendAttributes(Attributable item, String[] excludeKeys, StringBuilder builder) {

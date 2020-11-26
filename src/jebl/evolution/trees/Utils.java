@@ -23,6 +23,8 @@ import java.util.*;
  * @version $Id: Utils.java 979 2009-02-24 11:15:18Z rambaut $
  */
 public final class Utils {
+	private static final String BRANCH_LENGTH_FORMAT = "%.6g";
+
 	private Utils() { }  // make class uninstantiable
 
 	/**
@@ -89,8 +91,7 @@ public final class Utils {
 			}
 			buffer.append(name);
 			if (tree.hasLengths()) {
-				buffer.append(':');
-				buffer.append(tree.getLength(node));
+				buffer.append(":").append(String.format(BRANCH_LENGTH_FORMAT, tree.getLength(node)));
 			}
 		} else {
 			buffer.append('(');
@@ -105,7 +106,7 @@ public final class Utils {
 			// Don't write root length. This is ignored elsewhere and the nexus importer fails
 			// whet it is present.
 			if (parent != null && tree.hasLengths()) {
-				buffer.append(":").append(tree.getLength(node));
+				buffer.append(":").append(String.format(BRANCH_LENGTH_FORMAT, tree.getLength(node)));
 			}
 		}
 	}
