@@ -67,9 +67,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
      */
     public void exportSequences(Collection<? extends Sequence> sequences) throws IllegalArgumentException {
 
-        if (treesBlockOpen) {
-            endWriteTrees();
-        }
+        closeBlock();
 
         establishSequenceTaxa(sequences);
 
@@ -119,6 +117,16 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
         }
     }
 
+    /**
+     * close an existing open trees block
+     */
+    public void closeBlock() {
+        if (treesBlockOpen) {
+            endWriteTrees();
+        }
+    }
+
+
     private boolean treesBlockOpen = false;
 
     /**
@@ -161,9 +169,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     }
 
     public void close() {
-        if (treesBlockOpen) {
-            endWriteTrees();
-        }
+       closeBlock();
         writer.close();
     }
 
@@ -225,9 +231,7 @@ public class NexusExporter implements AlignmentExporter, SequenceExporter, TreeE
     }
 
     public void exportMatrix(final DistanceMatrix distanceMatrix) {
-        if (treesBlockOpen) {
-            endWriteTrees();
-        }
+        closeBlock();
 
         final List<Taxon> taxa = distanceMatrix.getTaxa();
         establishTaxa(taxa);
