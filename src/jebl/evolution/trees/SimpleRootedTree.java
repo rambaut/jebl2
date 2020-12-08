@@ -1,6 +1,7 @@
 package jebl.evolution.trees;
 
 import jebl.evolution.graphs.Edge;
+import jebl.evolution.graphs.Graph.NoEdgeException;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
 import jebl.util.AttributableHelper;
@@ -312,6 +313,38 @@ final public class SimpleRootedTree implements RootedTree {
         return new ArrayList<Node>(((SimpleRootedNode)node).getChildren());
     }
 
+    @Override
+    public int getExternalNodeCount(Node node) {
+        if (((SimpleRootedNode)node).externalNodeCount < 0) {
+            if (isExternal(node)) {
+                ((SimpleRootedNode)node).externalNodeCount = 1;
+            } else {
+                ((SimpleRootedNode)node).externalNodeCount = 0;
+                for (Node child : getChildren(node)) {
+                    ((SimpleRootedNode)node).externalNodeCount += getExternalNodeCount(child);
+                }
+            }
+        }
+        return ((SimpleRootedNode)node).externalNodeCount;
+    }
+
+    /**
+     * @param node the node whose external nodes are being requested.
+     * @return the list of external nodes descendent of the given node.
+     * The set may be empty for a terminal node (a tip).
+     */
+    @Override
+    public List<Node> getExternalNodes(Node node) {
+        if (isExternal(node)) return Collections.singletonList(node);
+
+        List<Node> tips = new ArrayList<Node>();
+        for (Node child :  getChildren(node)) {
+            tips.addAll(getExternalNodes(child));
+        }
+
+        return tips;
+    }
+
     /**
      * @return Whether this tree has node heights available
      */
@@ -373,12 +406,12 @@ final public class SimpleRootedTree implements RootedTree {
         return ((SimpleRootedNode)node).getParent();
     }
 
-	public Edge getParentEdge(Node node) {
-	    if (!(node instanceof SimpleRootedNode)) {
-	        throw new IllegalArgumentException("Node, " + node.toString() + " is not an instance of SimpleRootedNode");
-	    }
-	    return ((SimpleRootedNode)node).getEdge();
-	}
+    public Edge getParentEdge(Node node) {
+        if (!(node instanceof SimpleRootedNode)) {
+            throw new IllegalArgumentException("Node, " + node.toString() + " is not an instance of SimpleRootedNode");
+        }
+        return ((SimpleRootedNode)node).getEdge();
+    }
 
     /**
      * The root of the tree has the largest node height of
@@ -539,29 +572,29 @@ final public class SimpleRootedTree implements RootedTree {
         }
     }
 
-	/**
-	 * Returns an array of 2 nodes which are the nodes at either end of the edge.
-	 *
-	 * @param edge
-	 * @return an array of 2 edges
-	 */
-	public Node[] getNodes(Edge edge) {
-		for (Node node : getNodes()) {
-			if (((SimpleRootedNode)node).getEdge() == edge) {
-				return new Node[] { node, ((SimpleRootedNode)node).getParent() };
-			}
-		}
-		return null;
-	}
+    /**
+     * Returns an array of 2 nodes which are the nodes at either end of the edge.
+     *
+     * @param edge
+     * @return an array of 2 edges
+     */
+    public Node[] getNodes(Edge edge) {
+        for (Node node : getNodes()) {
+            if (((SimpleRootedNode)node).getEdge() == edge) {
+                return new Node[] { node, ((SimpleRootedNode)node).getParent() };
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * @return the set of all nodes in this graph.
-	 */
-	public Set<Node> getNodes() {
-	    Set<Node> nodes = new LinkedHashSet<Node>(internalNodes);
-	    nodes.addAll(getExternalNodes());
-	    return nodes;
-	}
+    /**
+     * @return the set of all nodes in this graph.
+     */
+    public Set<Node> getNodes() {
+        Set<Node> nodes = new LinkedHashSet<Node>(internalNodes);
+        nodes.addAll(getExternalNodes());
+        return nodes;
+    }
 
     /**
      * @return the set of all edges in this graph.
@@ -577,33 +610,33 @@ final public class SimpleRootedTree implements RootedTree {
         return edges;
     }
 
-	/**
-	 * The set of external edges. This is a pretty inefficient implementation because
-	 * a new set is constructed each time this is called.
-	 * @return the set of external edges.
-	 */
-	public Set<Edge> getExternalEdges() {
-		Set<Edge> edges = new LinkedHashSet<Edge>();
-		for (Node node : getExternalNodes()) {
-			edges.add(((SimpleRootedNode)node).getEdge());
-		}
-		return edges;
-	}
+    /**
+     * The set of external edges. This is a pretty inefficient implementation because
+     * a new set is constructed each time this is called.
+     * @return the set of external edges.
+     */
+    public Set<Edge> getExternalEdges() {
+        Set<Edge> edges = new LinkedHashSet<Edge>();
+        for (Node node : getExternalNodes()) {
+            edges.add(((SimpleRootedNode)node).getEdge());
+        }
+        return edges;
+    }
 
-	/**
-	 * The set of internal edges. This is a pretty inefficient implementation because
-	 * a new set is constructed each time this is called.
-	 * @return the set of internal edges.
-	 */
-	public Set<Edge> getInternalEdges() {
-		Set<Edge> edges = new LinkedHashSet<Edge>();
-		for (Node node : getInternalNodes()) {
-			if (node != getRootNode()) {
-			    edges.add(((SimpleRootedNode)node).getEdge());
-			}
-		}
-		return edges;
-	}
+    /**
+     * The set of internal edges. This is a pretty inefficient implementation because
+     * a new set is constructed each time this is called.
+     * @return the set of internal edges.
+     */
+    public Set<Edge> getInternalEdges() {
+        Set<Edge> edges = new LinkedHashSet<Edge>();
+        for (Node node : getInternalNodes()) {
+            if (node != getRootNode()) {
+                edges.add(((SimpleRootedNode)node).getEdge());
+            }
+        }
+        return edges;
+    }
 
     /**
      * @param degree the number of edges connected to a node
@@ -698,11 +731,11 @@ final public class SimpleRootedTree implements RootedTree {
         return conceptuallyUnrooted;
     }
 
-	public boolean isRoot(Node node) {
-		return node == rootNode;
-	}
+    public boolean isRoot(Node node) {
+        return node == rootNode;
+    }
 
-	// Attributable IMPLEMENTATION
+    // Attributable IMPLEMENTATION
 
     public void setAttribute(String name, Object value) {
         if (helper == null) {
@@ -904,5 +937,7 @@ final public class SimpleRootedTree implements RootedTree {
         private double length;
 
         private Edge edge = null;
+
+        private int externalNodeCount = -1;
     }
 }

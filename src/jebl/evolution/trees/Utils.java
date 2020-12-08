@@ -430,16 +430,7 @@ public final class Utils {
 	 * @return the number of external nodes under this node.
 	 */
 	public static int getExternalNodeCount(RootedTree tree, Node node) {
-
-		final List<Node> children = tree.getChildren(node);
-		if (children.size() == 0) return 1;
-
-		int externalNodeCount = 0;
-		for (Node child : children) {
-			externalNodeCount += getExternalNodeCount(tree, child);
-		}
-
-		return externalNodeCount;
+		return tree.getExternalNodeCount(node);
 	}
 
 	/**

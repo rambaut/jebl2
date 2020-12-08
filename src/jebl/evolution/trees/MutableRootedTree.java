@@ -20,7 +20,7 @@ import java.util.*;
  *
  */
 
-public class MutableRootedTree implements RootedTree {
+public class MutableRootedTree extends AbstractRootedTree {
     MutableRootedTree() {  super(); }
 
     /**

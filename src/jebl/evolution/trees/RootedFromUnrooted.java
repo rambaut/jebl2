@@ -17,7 +17,7 @@ import java.util.*;
  *
  */
 
-public class RootedFromUnrooted implements RootedTree {
+public class RootedFromUnrooted extends AbstractRootedTree {
 	/**
 	 * The unrooted tree
 	 */

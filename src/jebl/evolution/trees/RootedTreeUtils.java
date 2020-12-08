@@ -25,15 +25,7 @@ public class RootedTreeUtils {
 	 * @return the number of leaves under this node.
 	 */
 	public static final int getTipCount(RootedTree tree, Node node) {
-		int tipCount = 0;
-		for (Node child : tree.getChildren(node)) {
-			tipCount += getTipCount(tree, child);
-		}
-
-		// is external
-		if (tipCount == 0) return 1;
-
-		return tipCount;
+		return tree.getExternalNodeCount(node);
 	}
 
     public static double getMinTipHeight(RootedTree tree, Node node) {
