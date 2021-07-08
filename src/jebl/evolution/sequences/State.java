@@ -18,7 +18,7 @@ import java.util.*;
  */
 public abstract class State implements Comparable {
 
-    State(String name, String stateCode, int index) {
+    public State(String name, String stateCode, int index) {
         this.name = name;
         this.stateCode = stateCode;
 
@@ -26,7 +26,7 @@ public abstract class State implements Comparable {
         this.index = index;
     }
 
-    State(String name, String stateCode, int index, State[] ambiguities) {
+    public State(String name, String stateCode, int index, State[] ambiguities) {
         this.name = name;
         this.stateCode = stateCode;
         this.ambiguities = Collections.unmodifiableSortedSet(new TreeSet<State>(Arrays.asList(ambiguities)));
