@@ -60,7 +60,28 @@ public class RootedTreeUtils {
         return maxTipHeight;
     }
 
-    /**
+	/**
+	 * returns the average distance from the given node to all the tips below it
+	 * @param tree
+	 * @param node
+	 * @return
+	 */
+	public static double getAverageTipDistance(RootedTree tree, Node node) {
+		if (tree.isExternal(node)) {
+			return 0.0;
+		}
+
+		double nodeHeight = tree.getHeight(node);
+		double sumTipDistance = 0.0;
+		for (Node tip : tree.getExternalNodes(node)) {
+			sumTipDistance += nodeHeight - tree.getHeight(tip);
+		}
+
+		return sumTipDistance / tree.getExternalNodeCount(node);
+	}
+
+
+	/**
 	 * @return true only if all tips have height 0.0
 	 */
 	public static boolean isUltrametric(RootedTree tree, double tolerance) {

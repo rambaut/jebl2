@@ -8,6 +8,7 @@
  */
 package jebl.evolution.trees;
 
+import jebl.evolution.graphs.Edge;
 import jebl.evolution.graphs.Graph;
 import jebl.evolution.graphs.Node;
 import jebl.evolution.taxa.Taxon;
@@ -421,6 +422,33 @@ public final class Utils {
 		}
 		return true;
 	}
+
+	/**
+	 * @param tree the tree
+	 * @return the sum of all the branch lengths
+	 */
+	public static double getLength(Tree tree) {
+		double length = 0.0;
+		for (Edge edge : tree.getEdges()) {
+			length += edge.getLength();
+		}
+		return length;
+	}
+
+	/**
+	 * @param tree the tree
+	 * @return the sum of all the branch lengths
+	 */
+	public static double getLength(RootedTree tree) {
+		double length = 0.0;
+		for (Node node : tree.getNodes()) {
+			if (!tree.isRoot(node)) {
+				length += tree.getLength(node);
+			}
+		}
+		return length;
+	}
+
 
 	/**
 	 * Return the number of external nodes under this node.
