@@ -23,6 +23,8 @@ public class NewickImporter implements TreeImporter {
     private final ImportHelper helper;
     private boolean unquotedLabels;
 
+    private String lastLabel = null;
+
     /**
      * Constructor
      * @param reader  tree text
@@ -154,7 +156,7 @@ public class NewickImporter implements TreeImporter {
      */
     private Node readInternalNode(SimpleRootedTree tree) throws IOException, ImportException
     {
-        List<Node> children = new ArrayList<Node>();
+        List<Node> children = new ArrayList<>();
 
         // read the opening '('
         helper.readCharacter();
@@ -175,7 +177,7 @@ public class NewickImporter implements TreeImporter {
 
         // should have had a closing ')'
         if (helper.getLastDelimiter() != ')') {
-            throw new ImportException.BadFormatException("Missing closing ')' in tree");
+            throw new ImportException.BadFormatException("Missing closing ')' in tree" + (lastLabel != null ? " - after tip " + lastLabel : ""));
         }
 
         final Node node = tree.createInternalNode(children);
@@ -212,6 +214,7 @@ public class NewickImporter implements TreeImporter {
         if ("".equals(label)) {
             throw new ImportException.UnknownTaxonException("Emtpy node names are not allowed.");
         }
+        lastLabel = label;
         try {
             return tree.createExternalNode(Taxon.getTaxon(label));
         } catch (IllegalArgumentException e) {
