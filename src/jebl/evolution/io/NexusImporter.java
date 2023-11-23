@@ -60,6 +60,8 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         TAXA,
         CHARACTERS,
         DATA,
+        ASSUMPTIONS, // TODO
+        CALIBRATION, // TODO
         UNALIGNED,
         DISTANCES,
         TREES
@@ -479,7 +481,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
     /**
      * Finds the end of the current block.
      */
-    private void findToken(String query, boolean ignoreCase) throws IOException
+    protected void findToken(String query, boolean ignoreCase) throws IOException
     {
         String token;
         boolean found = false;
@@ -624,21 +626,9 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
                         }
 
                         String token3 = helper.readToken(";");
-                        if (token3.equalsIgnoreCase("NUCLEOTIDE") ||
-                                token3.equalsIgnoreCase("DNA") ||
-                                token3.equalsIgnoreCase("RNA")) {
+                        // replace getSequenceType if there is new data type
+                        sequenceType = getSequenceType(token3);
 
-                            sequenceType = SequenceType.NUCLEOTIDE;
-
-                        } else if (token3.equalsIgnoreCase("PROTEIN")) {
-
-                            sequenceType = SequenceType.AMINO_ACID;
-
-                        } else if (token3.equalsIgnoreCase("CONTINUOUS")) {
-
-                            throw new ImportException.UnparsableDataException("Continuous data cannot be parsed at present");
-
-                        }
                     } else if (token2.equalsIgnoreCase("INTERLEAVE")) {
                         isInterleaved = true;
                     }
@@ -655,6 +645,33 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         if ( block != NexusBlock.TAXA && sequenceType == null ) {
             throw new ImportException.MissingFieldException("DATATYPE. Only Nucleotide or Protein sequences are supported.");
         }
+    }
+
+    /**
+     * Extract data type after "DATATYPE" keyword, and convert into {@link SequenceType}.
+     * Override this method if there is new data type.
+     * @param token  the token returned from {@link ImportHelper#readToken(String)}.
+     * @return the corresponding {@link SequenceType}.
+     * @throws ImportException.UnparsableDataException
+     */
+    protected SequenceType getSequenceType(String token) throws ImportException.UnparsableDataException {
+        SequenceType sequenceType = null;
+        if (token.equalsIgnoreCase("NUCLEOTIDE") ||
+                token.equalsIgnoreCase("DNA") ||
+                token.equalsIgnoreCase("RNA")) {
+
+            sequenceType = SequenceType.NUCLEOTIDE;
+
+        } else if (token.equalsIgnoreCase("PROTEIN")) {
+
+            sequenceType = SequenceType.AMINO_ACID;
+
+        } else if (token.equalsIgnoreCase("CONTINUOUS")) {
+
+            throw new ImportException.UnparsableDataException("Continuous data cannot be parsed at present");
+
+        }
+        return sequenceType;
     }
 
     /**
@@ -852,7 +869,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
      * @param importHelper ImportHelper which may have read meta comments.
      * @throws ImportException.BadFormatException
      */
-    static void parseAndClearMetaComments(Attributable item, ImportHelper importHelper) throws ImportException.BadFormatException {
+    public static void parseAndClearMetaComments(Attributable item, ImportHelper importHelper) throws ImportException.BadFormatException {
         for (String meta : importHelper.getMetaComments()) {
             // A meta-comment which should be in the form:
             // \[&label[=value][,label[=value]>[,/..]]\]
@@ -1354,7 +1371,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
         }
     }
 
-    static void parseMetaCommentPairs(String meta, Attributable item) throws ImportException.BadFormatException {
+    public static void parseMetaCommentPairs(String meta, Attributable item) throws ImportException.BadFormatException {
         // This regex should match key=value pairs, separated by commas
         // This can match the following types of meta comment pairs:
         // value=number, value="string", value={item1, item2, item3}
@@ -1393,7 +1410,7 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
      * @param value the string
      * @return the object
      */
-    static Object parseValue(String value) {
+    public static Object parseValue(String value) {
 
         value = value.trim();
 
@@ -1467,14 +1484,14 @@ public class NexusImporter implements AlignmentImporter, SequenceImporter, TreeI
 
     // private stuff
     private NexusBlock nextBlock = null;
-    private String nextBlockName = null;
+    protected String nextBlockName = null;
 
-    private int taxonCount = 0, siteCount = 0;
-    private SequenceType sequenceType = null;
-    private String gapCharacters = "-";
-    private String matchCharacters = ".";
-    private String missingCharacters = "?";
-    private boolean isInterleaved = false;
+    protected int taxonCount = 0, siteCount = 0;
+    protected SequenceType sequenceType = null;
+    protected String gapCharacters = "-";
+    protected String matchCharacters = ".";
+    protected String missingCharacters = "?";
+    protected boolean isInterleaved = false;
 
     protected final ImportHelper helper;
 }
